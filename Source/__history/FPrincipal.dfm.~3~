@@ -1,0 +1,47 @@
+object FrmPrincipal: TFrmPrincipal
+  Left = 0
+  Top = 0
+  Caption = 'EcoCentauro - Teste Avalia'#231#227'o T'#233'cnica'
+  ClientHeight = 464
+  ClientWidth = 930
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  PixelsPerInch = 96
+  TextHeight = 13
+  object pnlPrincipal: TPanel
+    Left = 185
+    Top = 53
+    Width = 751
+    Height = 411
+    Align = alLeft
+    TabOrder = 0
+    ExplicitLeft = 179
+    ExplicitTop = 59
+    ExplicitHeight = 464
+  end
+  object pnlMenuPrincipal: TPanel
+    Left = 0
+    Top = 53
+    Width = 185
+    Height = 411
+    Align = alLeft
+    TabOrder = 1
+    ExplicitTop = 67
+    ExplicitHeight = 464
+  end
+  object pnlTopoPrincipal: TPanel
+    Left = 0
+    Top = 0
+    Width = 930
+    Height = 53
+    Align = alTop
+    TabOrder = 2
+    ExplicitLeft = -1
+    ExplicitTop = -4
+  end
+end

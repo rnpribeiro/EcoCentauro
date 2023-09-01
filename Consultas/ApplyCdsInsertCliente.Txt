@@ -1,0 +1,22 @@
+Insert Into CLIENTES 
+       (ID_CLIENTE, 
+        ID_EMPRESA,    
+        NOME, 
+        TIPOPESSOA, 
+        TELEFONES, 
+        DOCUMENTO, 
+        RG, 
+        UF, 
+        DATANASCIMENTO, 
+        DATACADASTRO) 
+       
+Values (2,
+2, 
+'RONALDO', 
+'F', 
+'(45) 99147-7302', 
+'608.365.127-15', 
+'14.139.945-4', 
+'PR', 
+'04.03.1960', 
+'01.09.2023 14:27:35') 

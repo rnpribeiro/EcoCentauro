@@ -1,0 +1,11 @@
+UpDate CLIENTES 
+Set ID_EMPRESA     = 2, 
+    NOME           = 'RONALDO NASCIMENTO', 
+    TIPOPESSOA     = 'F', 
+    TELEFONES      = '(45) 99147-7302', 
+    DOCUMENTO      = '608.365.127-15', 
+    RG             = '14.139.945-4', 
+    UF             = 'RJ', 
+    DATANASCIMENTO = '04.03.2015', 
+    DATACADASTRO   = '01.09.2023 14:27:35'  
+Where (Id_Cliente  = 2) 

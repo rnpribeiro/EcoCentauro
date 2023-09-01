@@ -1,0 +1,459 @@
+unit FmCadastro;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  FmSairAjuda, Buttons, ExtCtrls, FmOkCancelar, Db, IBQuery,
+  ActnList, IB, CMClientDataSetSpecial, uGlobalSpecial, System.Actions;
+
+type
+  TOperacaoCadastro  = ( ocInclusao,ocAlteracao,ocExclusao,ocNavegacao );
+  TOnAplicaAlteracao = procedure(Sender: TObject; DetDataSets : TList ) of object;
+  TFrameCadastro = class(TFrame)
+    plnOperacao: TPanel;
+    btnIncluir: TSpeedButton;
+    BtnAlterar: TSpeedButton;
+    BtnExcluir: TSpeedButton;
+    BtnProcurar: TSpeedButton;
+    ActionList: TActionList;
+    actIncluir: TAction;
+    actAlterar: TAction;
+    actExcluir: TAction;
+    actProcurar: TAction;
+    procedure actIncluirExecute(Sender: TObject);
+    procedure actAlterarExecute(Sender: TObject);
+    procedure actExcluirExecute(Sender: TObject);
+    procedure actProcurarExecute(Sender: TObject);
+    procedure actIncluirUpdate(Sender: TObject);
+    procedure actAlterarUpdate(Sender: TObject);
+  private
+    // Atributos
+    FOnIncluir         : TNotifyEvent;
+    FOnAlterar         : TNotifyEvent;
+    FOnAntesAlterar    : TNotifyEvent;
+    FOnAntesExcluir    : TNotifyEvent;        
+    FOnExcluir         : TNotifyEvent;
+    FOnProcurar        : TNotifyEvent;
+    FDataSource        : TDataSource;
+    FFrameOkCancelar   : TFrameOkCancelar;
+    FOperacaoCadastro  : TOperacaoCadastro;
+    FOnAplicaAlteracao : TOnAplicaAlteracao;
+    FPanel             : TPanel;
+    //
+    OldCancelar        : TNotifyEvent;
+    OldConfirmar       : TOnConfirmar;
+    FOnDepoisAplicar: TNotifyEvent;
+
+    function GetPodeExcluir: boolean;
+    
+    // Mensagens Internas
+    procedure Incluir  ( Sender : TObject );
+    procedure Alterar  ( Sender : TObject );
+    procedure AntesAlterar  ( Sender : TObject );
+    procedure AntesExcluir  ( Sender : TObject );
+    function Excluir  ( Sender : TObject ): Boolean;
+    procedure Procurar ( Sender : TObject );
+    Procedure Cancelar ( Sender : TObject );
+    Procedure Confirmar( Sender : TObject; var PodeGravar : Boolean);
+    //
+    procedure SetDataSource(const Value: TDataSource);
+    procedure SetFrameOkCancelar(const Value: TFrameOkCancelar);
+    procedure SetaPanel(const SendToBack: Boolean);
+    Procedure CheckDataSet;
+    procedure AplicaAlteracao (Sender: TObject; DetDataSets : TList );
+    //
+    procedure SetOnAlterar(const Value: TNotifyEvent);
+    procedure SetOnAntesAlterar(const Value: TNotifyEvent);
+    procedure SetOnAntesExcluir(const Value: TNotifyEvent);
+    procedure SetOnIncluir(const Value: TNotifyEvent);
+    procedure SetOnExcluir(const Value: TNotifyEvent);
+    procedure SetOnProcurar(const Value: TNotifyEvent);
+    procedure SetOnAplicaAlteracao(const Value: TOnAplicaAlteracao);
+    procedure SetPanel(const Value: TPanel);
+    procedure UpdateError(DataSet: TDataSet; E: EDatabaseError; var Action: TDataAction);
+    procedure SetOnDepoisAplicar(const Value: TNotifyEvent);
+  public
+    property OperacaoCadastro  : TOperacaoCadastro read FOperacaoCadastro DeFault ocNavegacao;
+    constructor Create(aOwner : TComponent); Override;
+  published
+   // Eventos
+    property OnIncluir         : TNotifyEvent       Read FOnIncluir         Write SetOnIncluir;
+    property OnAlterar         : TNotifyEvent       Read FOnAlterar         Write SetOnAlterar;
+    property OnAntesAlterar    : TNotifyEvent       Read FOnAntesAlterar    Write SetOnAntesAlterar;
+    property OnAntesExcluir    : TNotifyEvent       Read FOnAntesExcluir    Write SetOnAntesExcluir;
+    property OnExcluir         : TNotifyEvent       Read FOnExcluir         Write SetOnExcluir;
+    property OnProcurar        : TNotifyEvent       Read FOnProcurar        Write SetOnProcurar;
+    property OnAplicaAlteracao : TOnAplicaAlteracao Read FOnAplicaAlteracao write SetOnAplicaAlteracao;
+    property OnDepoisAplicar   : TNotifyEvent       read FOnDepoisAplicar   write SetOnDepoisAplicar;
+   // Propriedades
+    property DataSource        : TDataSource        Read FDataSource        Write SetDataSource;
+    property FrameOkCancelar   : TFrameOkCancelar   Read FFrameOkCancelar   Write SetFrameOkCancelar;
+    property Panel             : TPanel             Read FPanel             Write SetPanel;
+    property PodeExcluir       : boolean            Read GetPodeExcluir;
+  end;
+
+var
+    FrameCadastro: TFrameCadastro;
+
+implementation
+
+Uses uSistemaIB, IBCustomDataSet;
+
+{$R *.DFM}
+
+{ TFrameCadastro }
+
+Constructor TFrameCadastro.Create(aOwner : TComponent);
+Begin
+   FOnIncluir         := nil;
+   FOnAlterar         := nil;
+   FOnAntesAlterar    := nil;
+   FOnAntesExcluir    := nil;
+   FOnExcluir         := nil;
+   FOnProcurar        := nil;
+   FOnAplicaAlteracao := nil;
+   FOnDepoisAplicar   := nil;
+   FDataSource        := nil;
+   FFrameOkCancelar   := nil;
+   FPanel             := nil;
+
+   OldCancelar        := nil;
+   OldConfirmar       := nil;
+
+   Inherited Create(aOwner);
+
+   FOperacaoCadastro := ocNavegacao;
+End;
+
+procedure TFrameCadastro.Incluir(Sender: TObject);
+begin
+  // Verifica se foi escrito algum código ao evento.
+  FOperacaoCadastro := ocInclusao;
+  if Assigned(FOnIncluir) then
+     FOnIncluir(Self);
+end;
+
+procedure TFrameCadastro.Alterar(Sender: TObject);
+begin
+  FOperacaoCadastro := ocAlteracao;
+  if Assigned(FOnAlterar) then
+     FOnAlterar(Self);
+end;
+
+function TFrameCadastro.Excluir(Sender: TObject): Boolean;
+begin
+  FOperacaoCadastro := ocExclusao;
+  if Assigned(FOnExcluir) then
+    FOnExcluir(Self);
+end;
+
+procedure TFrameCadastro.Procurar(Sender: TObject);
+begin
+  if Assigned(FOnProcurar) then
+    FOnProcurar(Self);
+end;
+
+procedure TFrameCadastro.SetDataSource(const Value: TDataSource);
+begin
+  FDataSource := Value;
+end;
+
+procedure TFrameCadastro.SetFrameOkCancelar(const Value: TFrameOkCancelar);
+begin
+  FFrameOkCancelar := Value;
+  if ( not(csDesigning in ComponentState) ) and (FFrameOkCancelar <> nil) then
+  begin
+    OldConfirmar := FFrameOkCancelar.OnConfirmar;
+    OldCancelar  := FFrameOkCancelar.OnCancelar;
+    //
+    FFrameOkCancelar.OnConfirmar := Confirmar;
+    FFrameOkCancelar.OnCancelar  := Cancelar;
+  end;
+end;
+
+procedure TFrameCadastro.SetOnAlterar(const Value: TNotifyEvent);
+begin
+  FOnAlterar := Value;
+end;
+
+procedure TFrameCadastro.SetOnAntesAlterar(const Value: TNotifyEvent);
+begin
+  FOnAntesAlterar := Value;
+end;
+
+procedure TFrameCadastro.SetOnAntesExcluir(const Value: TNotifyEvent);
+begin
+  FOnAntesExcluir := Value;
+end;
+
+procedure TFrameCadastro.SetOnExcluir(const Value: TNotifyEvent);
+begin
+  FOnExcluir := Value;
+end;
+
+procedure TFrameCadastro.SetOnIncluir(const Value: TNotifyEvent);
+begin
+  FOnIncluir := Value;
+end;
+
+procedure TFrameCadastro.SetOnProcurar(const Value: TNotifyEvent);
+begin
+  FOnProcurar := Value;
+end;
+
+procedure TFrameCadastro.SetaPanel(const SendToBack: Boolean);
+begin
+  if (FPanel <> nil) then
+  begin
+    FPanel.Enabled := not SendToBack;
+    if SendToBack then
+      FPanel.SendToBack
+    else
+      FPanel.BringToFront;
+  end;
+  if SendToBack then
+  begin
+    btnIncluir.Down  := False;
+    BtnAlterar.Down  := False;
+    BtnExcluir.Down  := False;
+    BtnProcurar.Down := False;
+  end;
+end;
+
+procedure TFrameCadastro.Cancelar(Sender: TObject);
+begin
+  CheckDataSet;
+  FDataSource.DataSet.Cancel;
+  FOperacaoCadastro := ocNavegacao;
+  SetaPanel(True);
+  if Assigned( OldCancelar ) then
+    OldCancelar( Self );
+end;
+
+procedure TFrameCadastro.Confirmar(Sender: TObject; Var PodeGravar : Boolean);
+var dsVet   : TList;
+    dsApply : Array of TDataSet;
+    X, iErro   : Integer;
+begin
+  CheckDataSet;
+  if (OperacaoCadastro <> ocExclusao) and (Assigned( OldConfirmar )) then
+    OldConfirmar( Self, PodeGravar );
+
+  if PodeGravar then
+  begin
+    dsVet:= Tlist.Create;
+    try
+      try
+        if not Sistema.DataModuloPadrao.EmTransacao then
+          Sistema.DataModuloPadrao.IniciaTransacao;
+
+        AplicaAlteracao(Sender, dsVet);
+
+        if (OperacaoCadastro = ocExclusao) or (dsVet.Count = 0) then
+          dsVet.Add(FDataSource.DataSet)
+        else
+          dsVet.Insert(0, FDataSource.DataSet);
+
+        SetLength(dsApply, dsVet.Count);
+        for x := 0 to Pred( dsVet.Count ) do
+        begin
+          dsApply[x] := dsVet[x];
+          dsApply[x].OnPostError := UpdateError;
+
+          if (FOperacaoCadastro <> ocExclusao) and (dsApply[x].State in dsEditModes) then
+            dsApply[x].Post;
+        end;
+
+        if FDataSource.DataSet is TIBCustomDataSet then
+        begin
+          try
+            TIBCustomDataSet(FDataSource.DataSet).Database.ApplyUpdates(dsApply);
+            TIBCustomDataSet(FDataSource.DataSet).Transaction.CommitRetaining;
+          except
+  //           on E: Exception do
+             begin
+               TIBCustomDataSet(FDataSource.DataSet).Transaction.RollbackRetaining;
+               FDataSource.Dataset.Close;
+               FDataSource.Dataset.Open;
+             end;
+          end;
+        end
+        else
+        begin
+          for x := 0 to Pred( dsVet.Count ) do
+            if TCMClientDataSetSpecial(dsVet[x]).UpdatesPending then
+            begin
+              TCMClientDataSetSpecial(dsVet[x]).ApplyUpdates(-1);
+            end
+        end;
+
+        if Sistema.DataModuloPadrao.EmTransacao then
+          Sistema.DataModuloPadrao.CommitaTransacao;
+
+        if Assigned(FOnDepoisAplicar) then
+          FOnDepoisAplicar(Sender);
+      except
+        on E : Exception do
+          begin
+            if Sistema.DataModuloPadrao.EmTransacao then
+              Sistema.DataModuloPadrao.CancelaTransacao;
+
+            Sistema.Mensagem(E.Message ,mtError,[mbOk],'Erro',0);
+          end;
+      end;
+
+      FOperacaoCadastro:= ocNavegacao;
+      SetaPanel(True);
+    finally
+      for x := 0 to Pred( dsVet.Count ) do
+      begin
+        TDataSet(dsVet[x]).OnPostError := nil;
+      end;
+      dsVet.Free;
+    end;
+  end;
+end;
+
+procedure TFrameCadastro.CheckDataSet;
+begin
+  if FDataSource = nil then
+    DataBaseError('Informe o DataSource ');
+  if FDataSource.DataSet = nil then
+    DataBaseError('Informe o DataSet do DataSource');
+end;
+
+procedure TFrameCadastro.SetOnAplicaAlteracao(const Value: TOnAplicaAlteracao);
+begin
+  FOnAplicaAlteracao := Value;
+end;
+
+procedure TFrameCadastro.AplicaAlteracao(Sender: TObject; DetDataSets : TList );
+begin
+  if Assigned(FOnAplicaAlteracao) then
+    FOnAplicaAlteracao(Self,DetDataSets);
+end;
+
+procedure TFrameCadastro.SetPanel(const Value: TPanel);
+begin
+  FPanel := Value;
+end;
+
+procedure TFrameCadastro.actIncluirExecute(Sender: TObject);
+begin
+  CheckDataSet;
+  SetaPanel(False);
+  FDataSource.DataSet.Append;
+  Incluir(Self);
+end;
+
+procedure TFrameCadastro.actAlterarExecute(Sender: TObject);
+begin
+  AntesAlterar(Self);
+  CheckDataSet;
+  SetaPanel(False);
+  FDataSource.DataSet.Edit;
+  Alterar(Self);
+end;
+
+procedure TFrameCadastro.actExcluirExecute(Sender: TObject);
+var
+    b : Boolean;
+    Erro : EIBInterBaseError;
+begin
+  AntesExcluir(Self);
+  BtnExcluir.Tag := 0;
+  CheckDataSet;
+
+  if Sistema.Mensagem('Confirma exclusão', mtConfirmation ,[mbYes,mbNo], 'Confirmação', 0) = mrYes then
+  begin
+    BtnExcluir.Tag := 1;
+    try
+      Excluir(Self);
+      if GetPodeExcluir then
+      begin
+        FDataSource.DataSet.Delete;
+        Confirmar(Sender, b);
+      end;
+    except
+      on E : EIBInterBaseError do
+        begin
+          Sistema.Mensagem(Sistema.MensErroCod(E.ibErrorCode), mtError, [mbok], 'Erro', 0);
+          BtnExcluir.Down:= False;
+          Exit;
+        end;
+    end;
+  end;
+  BtnExcluir.Down:= False;
+end;
+
+procedure TFrameCadastro.actProcurarExecute(Sender: TObject);
+begin
+  CheckDataSet;
+  Procurar(Self);
+  SetaPanel(True);
+end;
+
+procedure TFrameCadastro.actIncluirUpdate(Sender: TObject);
+begin
+  if (FDataSource <> nil) and (FDataSource.DataSet <> nil) then
+  begin
+    plnOperacao.Enabled                 := not (FDataSource.DataSet.State in dsEditModes);
+    FFrameOkCancelar.BtnOK.Enabled      := FDataSource.DataSet.State in dsEditModes;
+    FFrameOkCancelar.BtnCancelar.Enabled:= FDataSource.DataSet.State in dsEditModes;
+  end
+  else
+  begin
+    plnOperacao.Enabled                 := False;
+    FFrameOkCancelar.BtnOK.Enabled      := False;
+    FFrameOkCancelar.BtnCancelar.Enabled:= False;
+  end;
+end;
+
+procedure TFrameCadastro.actAlterarUpdate(Sender: TObject);
+begin
+  if (FDataSource <> nil) and (FDataSource.DataSet <> nil) then
+    TAction(Sender).Enabled:= not FDataSource.DataSet.IsEmpty
+  else
+    TAction(Sender).Enabled:= False;
+end;
+
+function TFrameCadastro.GetPodeExcluir: boolean;
+begin
+  result:= BtnExcluir.Tag > 0;
+  BtnExcluir.Tag := 0;
+end;
+
+procedure TFrameCadastro.UpdateError(DataSet: TDataSet; E: EDatabaseError;
+    var Action: TDataAction);
+begin
+  if DataSet.InheritsFrom(TIBCustomDataSet) then
+    TIBCustomDataSet(DataSet).Transaction.RollbackRetaining;
+
+{
+  case UpdateKind of
+    ukModify: lMsg := 'Erro ao alterar o registro.';
+    ukInsert: lMsg := 'Registro já gravado.';
+    ukDelete: lMsg := 'Erro ao excluir o registro. Registro está sendo utilizado em outra tabela.';
+  end;
+}
+end;
+
+procedure TFrameCadastro.AntesAlterar(Sender: TObject);
+begin
+  if Assigned(FOnAntesAlterar) then
+     FOnAntesAlterar(Self);
+end;
+
+procedure TFrameCadastro.AntesExcluir(Sender: TObject);
+begin
+  if Assigned(FOnAntesExcluir) then
+     FOnAntesExcluir(Self);
+end;
+
+procedure TFrameCadastro.SetOnDepoisAplicar(const Value: TNotifyEvent);
+begin
+  FOnDepoisAplicar := Value;
+end;
+
+end.

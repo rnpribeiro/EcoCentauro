@@ -1,0 +1,18 @@
+program pPOOAvancado;
+
+uses
+  Vcl.Forms,
+  FPooAvançado in '..\Source\FPooAvançado.pas' {Form1},
+  eInterface.Model.PessoaFisica in '..\Interface\eInterface.Model.PessoaFisica.pas',
+  eInterface.Model.Interfaces in '..\Interface\eInterface.Model.Interfaces.pas',
+  eInterface.Model.PessoaJuridica in '..\Interface\eInterface.Model.PessoaJuridica.pas',
+  eInterface.Model.Pessoa.Factory in '..\Interface\eInterface.Model.Pessoa.Factory.pas';
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TForm1, Form1);
+  Application.Run;
+end.

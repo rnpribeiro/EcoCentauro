@@ -1,0 +1,410 @@
+unit uCtrlEmpresas;
+
+interface
+
+uses
+  MidasLib, Windows, Messages, SysUtils, System.Classes, Graphics, Controls,
+  Forms, Dialogs, Gauges, DB, SqlExpr, DBClient, ddb, ddmCliente,
+  eInterface.Model.Interfaces;
+
+type
+  TUFList = class
+    class procedure UFToList(value: TStrings);
+  end;
+
+  TCtrlEmpresas = class(TObject)
+  private
+    FMensagemInfo: string;
+    FId_Empresa: Integer;
+    FNomeFantasia: string;
+    FCNPJ: string;
+    FUF: string;
+
+    function GetMensagemInfo: string;
+    function GetId_Empresa: Integer;
+    function GetNomeFantasia: string;
+    function GetCNPJ: string;
+    function GetUF: string;
+
+    procedure SetMensagemInfo(const Value: string);
+    procedure SetId_Empresa(const Value: Integer);
+    procedure SetNomeFantasia(const Value: string);
+    procedure SetCNPJ(const Value: string);
+    procedure SetUF(const Value: string);
+
+  public
+    DataModule: TdmCliente;
+
+    procedure IniciarProperty(Action: Boolean);
+    function Processar(Processo: Integer): Boolean;
+
+    function MontaSqlEmpresa(AId_Empresa: Integer = -9): string;
+    function MontaSqlProcurarEmpresa(AId_Empresa: Integer): string;
+
+    function TableIsEmpty(const Table: string);
+
+    function ApplyCdsInsertEmpresa(var AId_Empresa: Integer): Boolean;
+    function ApplyCdsEditEmpresa(AId_Empresa: Integer): Boolean;
+    function ApplyCdsDeleteEmpresa(AId_Empresa: Integer): Boolean;
+
+    property MensagemInfo: string read GetMensagemInfo write SetMensagemInfo;
+
+    property Id_Empresa: Integer read GetId_Empresa write SetId_Empresa;
+    property NomeFantasia: string read GetNomeFantasia write SetNomeFantasia;
+    property CNPJ: string read GetCNPJ write SetCNPJ;
+    property UF: string read GetUF write SetUF;
+
+    constructor Create;
+    destructor Destroy; override;
+
+  end;
+
+implementation
+
+uses
+  uSistemaIB, uFuncoes;
+
+{ TCtrlEmpresas }
+
+constructor TCtrlEmpresas.Create;
+begin
+  DataModule := TdmCliente.Create(NIL);
+  IniciarProperty(False);
+end;
+
+destructor TCtrlEmpresas.Destroy;
+begin
+  inherited;
+  FreeAndNil(DataModule);
+end;
+
+procedure TCtrlEmpresas.IniciarProperty(Action: Boolean);
+begin
+  if not Action then
+  begin
+    FMensagemInfo := '';
+    FId_Empresa   := 0;
+    FNomeFantasia := '';
+    FCNPJ         := '';
+    FUF           := '';
+  end
+  else
+  begin
+    FMensagemInfo := 'Sucesso';
+    FId_Empresa   := DataModule.qryEmpresa.FieldByName('ID_EMPRESA').AsInteger;
+    FNomeFantasia := DataModule.qryEmpresa.FieldByName('NOMEFANTASIA').AsString;
+    FCNPJ         := DataModule.qryEmpresa.FieldByName('CNPJ').AsString;
+    FUF           := DataModule.qryEmpresa.FieldByName('UF').AsString;
+  end;
+end;
+
+function TCtrlEmpresas.MontaSqlEmpresa(AId_Empresa: integer): string;
+var
+  sql: TStringList;
+begin
+  sql := TStringList.Create;
+  try
+    sql.Clear;
+    sql.Add('SELECT ID_EMPRESA,     ');
+    sql.Add('       NOMEFANTASIA,   ');
+    sql.Add('       CNPJ,           ');
+    sql.Add('       UF              ');
+    sql.Add('FROM EMPRESAS          ');
+
+    if (AId_Empresa <> -9) then
+    begin
+      sql.Add('                          ');
+      sql.Add('WHERE Id_Empresa = ' + IntToStr(AId_Empresa));
+    end;
+
+    sql.Add('                            ');
+    sql.Add('ORDER BY NOMEFANTASIA ');
+
+    if DebugHook <> 0 then
+      Sql.SaveToFile('C:\EcoCentauro\Consultas\MontaSqlEmpresa.Txt');
+
+    Result := sql.Text;
+  finally
+    FreeAndNil(sql);
+  end;
+end;
+
+function TCtrlEmpresas.MontaSqlProcurarEmpresa(AId_Empresa: Integer): string;
+var
+  sql: TStringList;
+begin
+  sql := TStringList.Create;
+  try
+    sql.Clear;
+    sql.Add('SELECT ID_EMPRESA AS IDRETORNO, ');
+    sql.Add('       NOMEFANTASIA             ');
+    sql.Add('FROM EMPRESAS                   ');
+    if (AId_Empresa <> -9) then
+    begin
+      sql.Add('WHERE Id_Empresa = ' + IntToStr(AId_Empresa));
+      sql.Add('                      ');
+    end;
+    sql.Add('ORDER BY NOMEFANTASIA  ');
+
+    if DebugHook <> 0 then
+      Sql.SaveToFile('C:\EcoCentauro\Consultas\MontaSqlProcurarEmpresa.Txt');
+
+    Result := sql.Text;
+  finally
+    FreeAndNil(sql);
+  end;
+end;
+
+function TCtrlEmpresas.TableIsEmpty(const Table: string);
+begin
+  try
+    try
+      DataModule.DataModule.FDTransacaoPadrao.StartTransaction;
+      DataModule.qryConexaoPadrao.Close;
+      DataModule.qryConexaoPadrao.SQL.Clear;
+      DataModule.qryConexaoPadrao.SQL.Add('Select * From ' + Table + 'Where (Id_Empresa = ' + IntToStr(AId_Empresa) + ')');
+
+      if DebugHook <> 0 then
+        DataModule.qryConexaoPadrao.SQL.SaveToFile('C:\EcoCentauro\Consultas\TableIsEmpty.Txt');
+
+      DataModule.qryConexaoPadrao.Open;
+
+      Result := (not DataModule.qryConexaoPadrao.IsEmpty);
+    except
+      on E: Exception do
+      begin
+        Result := False;
+        DataModule.DataModule.FDTransacaoPadrao.Rollback;
+      end;
+    end;
+  finally
+    DataModule.qryConexaoPadrao.Close;
+  end;
+end;
+
+function TCtrlEmpresas.GetMensagemInfo: string;
+begin
+  Result := FMensagemInfo;
+end;
+
+function TCtrlEmpresas.GetCNPJ: string;
+begin
+  Result := FCNPJ;
+end;
+
+function TCtrlEmpresas.GetId_Empresa: Integer;
+begin
+  Result := FId_Empresa;
+end;
+
+function TCtrlEmpresas.GetNomeFantasia: string;
+begin
+  Result := FNomeFantasia;
+end;
+
+function TCtrlEmpresas.GetUF: string;
+begin
+  Result := FUF;
+end;
+
+procedure TCtrlEmpresas.SetMensagemInfo(const Value: string);
+begin
+  FMensagemInfo := Value;
+end;
+
+procedure TCtrlEmpresas.SetId_Empresa(const Value: Integer);
+begin
+  FId_Empresa := Value;
+end;
+
+procedure TCtrlEmpresas.SetNomeFantasia(const Value: string);
+begin
+  FNomeFantasia := Value;
+end;
+
+procedure TCtrlEmpresas.SetCNPJ(const Value: string);
+begin
+  FCNPJ := Value;
+end;
+
+procedure TCtrlEmpresas.SetUF(const Value: string);
+begin
+  FUF := Value;
+end;
+
+function TCtrlEmpresas.Processar(Processo: Integer): Boolean;
+var
+    iId_Empresa : Integer;
+begin
+  try
+    Result := True;
+    case Processo of
+       1: begin
+            iId_Empresa := 0;
+            ApplyCdsInsertEmpresa(iId_Empresa);
+          end;
+       2: begin
+           Result := (MessageDlg('Confirma as Alterações nessa Empresa?', mtConfirmation, [mbYes,mbNo], 0) = mrYes);
+           if Result then
+             ApplyCdsEditEmpresa(Id_Empresa);
+          end;
+       4: begin
+            ApplyCdsDeleteEmpresa(Id_Empresa);
+          end;
+    end;
+  finally
+    if Result then
+       ShowMessage('Operação realizada com sucesso!' );
+  end;
+end;
+
+function TCtrlEmpresas.ApplyCdsDeleteEmpresa(AId_Empresa: Integer): Boolean;
+var
+  DataModule: TdmCliente;
+begin
+  DataModule := TdmCliente.Create(nil);
+  try
+    try
+      DataModule.DataModule.FDTransacaoPadrao.StartTransaction;
+      DataModule.qryConexaoPadrao.Close;
+      DataModule.qryConexaoPadrao.SQL.Clear;
+      DataModule.qryConexaoPadrao.SQL.Add('Delete From EMPRESAS Where (Id_Empresa = ' + IntToStr(AId_Empresa) + ')');
+
+      if DebugHook <> 0 then
+        DataModule.qryConexaoPadrao.SQL.SaveToFile('C:\EcoCentauro\Consultas\ApplyCdsDeleteEmpresa.Txt');
+
+      DataModule.qryConexaoPadrao.ExecSQL;
+      DataModule.DataModule.FDTransacaoPadrao.Commit;
+
+      Result := True;
+    except
+      on E: Exception do
+      begin
+        Result := False;
+        DataModule.DataModule.FDTransacaoPadrao.Rollback;
+      end;
+    end;
+  finally
+    DataModule.qryConexaoPadrao.Close;
+    FreeAndNil(DataModule);
+  end;
+end;
+
+function TCtrlEmpresas.ApplyCdsEditEmpresa(AId_Empresa: Integer): Boolean;
+var
+  DataModule: TdmCliente;
+begin
+  DataModule := TdmCliente.Create(nil);
+  DataModule.DataModule.FDTransacaoPadrao.StartTransaction;
+  try
+    try
+      DataModule.qryConexaoPadrao.Close;
+      DataModule.qryConexaoPadrao.SQL.Clear;
+      DataModule.qryConexaoPadrao.SQL.Add('UpDate EMPRESAS ');
+      DataModule.qryConexaoPadrao.SQL.Add('Set NOMEFANTASIA   = ' + QuotedStr(NomeFantasia) + ', ');
+      DataModule.qryConexaoPadrao.SQL.Add('    CNPJ           = ' + QuotedStr(CNPJ)         + ', ');
+      DataModule.qryConexaoPadrao.SQL.Add('    UF             = ' + QuotedStr(UF)           + '  ');
+      DataModule.qryConexaoPadrao.SQL.Add('Where (Id_Empresa  = ' + IntToStr(AId_Empresa)   + ') ');
+
+      if DebugHook <> 0 then
+        DataModule.qryConexaoPadrao.SQL.SaveToFile('C:\EcoCentauro\Consultas\ApplyCdsEditEmpresa.Txt');
+
+      DataModule.qryConexaoPadrao.ExecSQL;
+      DataModule.DataModule.FDTransacaoPadrao.Commit;
+      Result := True;
+
+    except
+      on E: Exception do
+      begin
+        Result := False;
+        DataModule.DataModule.FDTransacaoPadrao.Rollback;
+      end;
+    end;
+  finally
+    DataModule.qryConexaoPadrao.Close;
+    FreeAndNil(DataModule);
+  end;
+end;
+
+function TCtrlEmpresas.ApplyCdsInsertEmpresa(var AId_Empresa: Integer): Boolean;
+var
+  DataModule: TdmCliente;
+  iVezes: Integer;
+begin
+  DataModule := TdmCliente.Create(nil);
+  DataModule.DataModule.FDConexaoPadrao.StartTransaction;
+  try
+    AId_Empresa := 0;
+    iVezes := 1;
+    while (AId_Empresa = 0) and (iVezes <= 5) do
+    begin
+      DataModule.qryConexaoPadrao.Close;
+      DataModule.qryConexaoPadrao.SQL.Clear;
+      DataModule.qryConexaoPadrao.SQL.Add('Select gen_id(GEN_EMPRESAS_ID, 1) AS SEQUENCE from rdb$database');
+      DataModule.qryConexaoPadrao.Open;
+      AId_Empresa := DataModule.qryConexaoPadrao.FieldByName('SEQUENCE').AsInteger;
+      Inc(iVezes);
+    end;
+
+    if (iVezes >= 5) then
+    begin
+      Exit;
+    end;
+
+    try
+      DataModule.qryConexaoPadrao.Close;
+      DataModule.qryConexaoPadrao.SQL.Clear;
+      DataModule.qryConexaoPadrao.SQL.Add('Insert Into EMPRESAS ');
+      DataModule.qryConexaoPadrao.SQL.Add('       (ID_EMPRESA, ');
+      DataModule.qryConexaoPadrao.SQL.Add('        NOMEFANTASIA, ');
+      DataModule.qryConexaoPadrao.SQL.Add('        CNPJ, ');
+      DataModule.qryConexaoPadrao.SQL.Add('        UF) ');
+      DataModule.qryConexaoPadrao.SQL.Add('       ');
+      DataModule.qryConexaoPadrao.SQL.Add('Values (' + IntToStr(AId_Empresa) + ',');
+      DataModule.qryConexaoPadrao.SQL.Add(QuotedStr(NomeFantasia) + ', ');
+      DataModule.qryConexaoPadrao.SQL.Add(QuotedStr(CNPJ) + ', ');
+      DataModule.qryConexaoPadrao.SQL.Add(QuotedStr(UF) + ') ');
+
+      if DebugHook <> 0 then
+        DataModule.qryConexaoPadrao.SQL.SaveToFile('C:\EcoCentauro\Consultas\ApplyCdsInsertEmpresa.Txt');
+
+      DataModule.qryConexaoPadrao.ExecSQL;
+      DataModule.DataModule.FDConexaoPadrao.Commit;
+      Result := True;
+
+    except
+      on E: Exception do
+      begin
+        Result := False;
+        DataModule.DataModule.FDConexaoPadrao.Rollback;
+      end;
+    end;
+  finally
+    DataModule.qryConexaoPadrao.Close;
+    FreeAndNil(DataModule);
+  end;
+end;
+
+{ TUFList }
+
+class procedure TUFList.UFToList(value: TStrings);
+var
+  DataModule: TdmCliente;
+begin
+  DataModule := TdmCliente.Create(nil);
+  try
+    value.Clear;
+    DataModule.qryEstado.Open;
+    while (not DataModule.qryEstado.Eof) do
+    begin
+      value.Add(DataModule.qryEstado.FieldByName('SIGLA').AsString);
+      DataModule.qryEstado.Next
+    end;
+  finally
+    DataModule.qryEstado.Close;
+    FreeAndNil(DataModule);
+  end;
+end;
+
+end.
+

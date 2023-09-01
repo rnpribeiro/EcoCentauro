@@ -1,0 +1,1 @@
+Delete From CLIENTES Where (Id_Cliente = 2)

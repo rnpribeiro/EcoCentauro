@@ -1,0 +1,108 @@
+inherited FrmCadastroPai: TFrmCadastroPai
+  Left = 383
+  Top = 191
+  Caption = 'FrmCadastroPai'
+  ClientHeight = 359
+  ClientWidth = 496
+  OldCreateOrder = True
+  OnCloseQuery = FormCloseQuery
+  OnShow = FormShow
+  ExplicitTop = -37
+  ExplicitWidth = 502
+  ExplicitHeight = 388
+  PixelsPerInch = 96
+  TextHeight = 15
+  object plnFundos: TPanel
+    Left = 0
+    Top = 59
+    Width = 496
+    Height = 253
+    Align = alClient
+    BevelInner = bvLowered
+    BorderWidth = 2
+    Enabled = False
+    TabOrder = 0
+  end
+  inline FrameOKCancelar1: TFrameOKCancelar
+    Left = 0
+    Top = 312
+    Width = 496
+    Height = 47
+    Align = alBottom
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 1
+    ExplicitTop = 312
+    ExplicitWidth = 496
+    inherited plnSair: TPanel
+      Width = 496
+      ExplicitWidth = 496
+      inherited btnBtnSair: TBitBtn
+        Left = 290
+        ExplicitLeft = 290
+      end
+      inherited btnBtnAjuda: TBitBtn
+        Left = 390
+        ExplicitLeft = 390
+      end
+      inherited btnOk: TBitBtn
+        Left = 96
+        ExplicitLeft = 96
+      end
+      inherited BtnCancelar: TBitBtn
+        Left = 197
+        ExplicitLeft = 197
+      end
+    end
+  end
+  inline FrameCadastro1: TFrameCadastro
+    Left = 0
+    Top = 0
+    Width = 496
+    Height = 59
+    Align = alTop
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 2
+    ExplicitWidth = 496
+    ExplicitHeight = 59
+    inherited plnOperacao: TPanel
+      Width = 496
+      Height = 59
+      ExplicitWidth = 496
+      ExplicitHeight = 59
+    end
+  end
+  object ds: TDataSource
+    Left = 264
+    Top = 16
+  end
+  object menuFrame: TPopupMenu
+    Left = 336
+    Top = 16
+    object InserirAcesso: TMenuItem
+      Caption = 'Inserir'
+      Enabled = False
+    end
+    object AlterarAcesso: TMenuItem
+      Caption = 'Alterar'
+      Enabled = False
+    end
+    object ExcluirAcesso: TMenuItem
+      Caption = 'Excluir'
+      Enabled = False
+    end
+    object ProcurarAcesso: TMenuItem
+      Caption = 'Procurar'
+      Enabled = False
+    end
+  end
+end

@@ -1,0 +1,9 @@
+SELECT ID_EMPRESA,     
+       NOMEFANTASIA,   
+       CNPJ,           
+       UF              
+FROM EMPRESAS          
+                          
+WHERE Id_Empresa = 3
+                            
+ORDER BY NOMEFANTASIA 

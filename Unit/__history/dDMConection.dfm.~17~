@@ -1,0 +1,132 @@
+object DMConection: TDMConection
+  OldCreateOrder = True
+  OnCreate = DMConectionCreate
+  Height = 445
+  Width = 492
+  object FDTransacaoPadrao: TFDTransaction
+    Connection = FDConexaoPadrao
+    Left = 152
+    Top = 8
+  end
+  object FDConexaoPadrao: TFDConnection
+    ConnectionName = 'FBConnection'
+    Params.Strings = (
+      'Database=C:\EcoCentauro\BancoFB2.5\ECOCENTAURO.FDB'
+      'Password=masterkey'
+      'User_Name=SYSDBA'
+      'DriverID=FB')
+    LoginPrompt = False
+    Transaction = FDTransacaoPadrao
+    Left = 40
+    Top = 8
+  end
+  object qryConexaoPadrao: TFDQuery
+    Connection = FDConexaoPadrao
+    Left = 40
+    Top = 59
+  end
+  object qryAuxiliar: TFDQuery
+    Connection = FDConexaoPadrao
+    Left = 42
+    Top = 109
+  end
+  object qryEstado: TFDQuery
+    Connection = FDConexaoPadrao
+    SQL.Strings = (
+      'SELECT ID_ESTADO,'
+      '       SIGLA,'
+      '       NOME,'
+      '       IBGE'
+      'FROM ESTADO')
+    Left = 42
+    Top = 160
+  end
+  object qryEmpresa: TFDQuery
+    Connection = FDConexaoPadrao
+    SQL.Strings = (
+      'SELECT ID_EMPRESA,'
+      '       NOMEFANTASIA,'
+      '       CNPJ,'
+      '       UF'
+      'FROM EMPRESAS')
+    Left = 42
+    Top = 212
+  end
+  object qryCliente: TFDQuery
+    Connection = FDConexaoPadrao
+    SQL.Strings = (
+      'SELECT ID_CLIENTE,'
+      '       ID_EMPRESA,'
+      '       NOME,'
+      '       TIPOPESSOA,'
+      '       TELEFONES,'
+      '       DOCUMENTO,'
+      '       RG,'
+      '       UF,'
+      '       DATANASCIMENTO,'
+      '       DATACADASTRO'
+      'FROM CLIENTES')
+    Left = 42
+    Top = 264
+  end
+  object qryTelefone: TFDQuery
+    Connection = FDConexaoPadrao
+    SQL.Strings = (
+      'SELECT T.ID_TELEFONE,'
+      '       T.ID_CLIENTE,'
+      '       T.DDD,'
+      '       T.TELEFONE,'
+      '       T.RAMAL,'
+      '       T.ID_TIPO,'
+      '       TF.DESCRICAO'
+      
+        'FROM TELEFONES T INNER JOIN TIPOTELEFONE TF ON TF.ID_TIPO = T.ID' +
+        '_TIPO')
+    Left = 42
+    Top = 318
+  end
+  object qryTipoTelefone: TFDQuery
+    Connection = FDConexaoPadrao
+    SQL.Strings = (
+      'SELECT ID_TIPO,'
+      '       DESCRICAO'
+      'FROM TIPOTELEFONE')
+    Left = 42
+    Top = 374
+  end
+  object dsConexaoPadrao: TDataSource
+    DataSet = qryConexaoPadrao
+    Left = 151
+    Top = 61
+  end
+  object dsEstado: TDataSource
+    DataSet = qryEstado
+    Left = 151
+    Top = 163
+  end
+  object dsAuxiliar: TDataSource
+    DataSet = qryAuxiliar
+    Left = 151
+    Top = 111
+  end
+  object dsEmpresa: TDataSource
+    DataSet = qryEmpresa
+    Left = 151
+    Top = 216
+  end
+  object dsCliente: TDataSource
+    DataSet = qryCliente
+    Left = 151
+    Top = 268
+  end
+  object dsTelefone: TDataSource
+    DataSet = qryTelefone
+    Left = 151
+    Top = 315
+  end
+  object dsTipoTelefone: TDataSource
+    DataSet = qryTipoTelefone
+    Left = 151
+    Top = 371
+  end
+end

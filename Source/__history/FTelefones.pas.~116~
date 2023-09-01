@@ -1,0 +1,155 @@
+unit FTelefones;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+  uCtrlClientes, uCtrlTelefones,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, eInterface.Model.Interfaces,
+  Vcl.ExtCtrls, Vcl.Buttons, Data.DB, Vcl.Grids, Vcl.DBGrids;
+
+type
+  TFrmTelefones = class(TForm)
+    pnlOperacaoPai: TPanel;
+    btnIncluir: TSpeedButton;
+    btnAlterar: TSpeedButton;
+    btnExcluir: TSpeedButton;
+    btnProcurar: TSpeedButton;
+    btnConsultar: TSpeedButton;
+    pnlSairPai: TPanel;
+    btnConfirmar: TBitBtn;
+    btnCancelar: TBitBtn;
+    btnSair: TBitBtn;
+    btnAjuda: TBitBtn;
+    pnlTelefones: TPanel;
+    lblDDD: TLabel;
+    lblTelefone: TLabel;
+    lblRamal: TLabel;
+    lblTipoTelefone: TLabel;
+    lblId_Cliente: TLabel;
+    edtDDD: TEdit;
+    edtTelefone: TEdit;
+    edtRamal: TEdit;
+    edtDescricao: TEdit;
+    btnTipoTelefone: TButton;
+    edtId_Cliente: TEdit;
+    edtId_Tipo: TEdit;
+    Label2: TLabel;
+    edtNomeCliente: TEdit;
+    lblId_Telefone: TLabel;
+    edtId_Telefone: TEdit;
+    pnlGridTelefones: TPanel;
+    dbgrdTelefones: TDBGrid;
+    procedure btnTipoTelefoneClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormShow(Sender: TObject);
+    procedure pnlTelefonesEnter(Sender: TObject);
+  private
+    { Private declarations }
+    bAction       : Boolean;
+    Processo      : Integer;
+    FCtrlClientes : TCtrlClientes;
+    CtrlTelefones : TCtrlTelefones;
+    FId_Cliente: Integer;
+
+    procedure HabilitarBotoes(bEncontrou: Boolean);
+
+    procedure SetId_Cliente(const Value: Integer);
+    procedure SetCtrlClientes(const Value: TCtrlClientes);
+
+  public
+    { Public declarations }
+    property Id_Cliente  : Integer       read FId_Cliente   write SetId_Cliente;
+    property CtrlClientes: TCtrlClientes read FCtrlClientes write SetCtrlClientes;
+  end;
+
+var
+  FrmTelefones: TFrmTelefones;
+
+implementation
+uses
+  uFuncoes, FProcurarTelefone, FProcurarTipoTelefone;
+
+{$R *.dfm}
+
+procedure TFrmTelefones.FormCreate(Sender: TObject);
+begin
+  bAction                     := False;
+  Processo                    := 0;
+  CtrlTelefones               := TCtrlTelefones.Create;
+  dbgrdTelefones.DataSource   := CtrlTelefones.DataModule.DataModule.dsTelefone;
+  ReportMemoryLeaksOnShutdown := True;
+end;
+
+procedure TFrmTelefones.FormShow(Sender: TObject);
+begin
+  CtrlTelefones.Id_Cliente := Id_Cliente;
+end;
+
+procedure TFrmTelefones.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+  FreeAndNil(CtrlTelefones);
+end;
+
+procedure TFrmTelefones.HabilitarBotoes(bEncontrou: Boolean);
+begin
+  btnIncluir.Enabled   := not bEncontrou;
+  btnAlterar.Enabled   := bEncontrou;
+  btnConsultar.Enabled := bEncontrou;
+  btnExcluir.Enabled   := bEncontrou;
+  btnProcurar.Enabled  := not bEncontrou;
+end;
+
+procedure TFrmTelefones.pnlTelefonesEnter(Sender: TObject);
+begin
+  CtrlTelefones.IniciarProperty(bAction);
+  edtId_Telefone.Enabled := True;
+  edtId_Telefone.Text    := TUtils.Iif<string>(CtrlTelefones.Id_Telefone = 0, '********', IntToStr(CtrlTelefones.Id_Telefone));
+  edtId_Telefone.Enabled := False;
+  edtId_Cliente.Text     := IntToStr(CtrlClientes.Id_Cliente);
+  edtNomeCliente.Text    := CtrlTelefones.Nome;
+  edtDDD.Text            := CtrlTelefones.DDD;
+  edtTelefone.Text       := CtrlTelefones.Telefone;
+  edtRamal.Text          := CtrlTelefones.Ramal;
+  edtId_tipo.Text        := IntToStr(CtrlTelefones.Id_Tipo);
+  edtDescricao.Text      := CtrlTelefones.Descricao;
+end;
+
+procedure TFrmTelefones.btnTipoTelefoneClick(Sender: TObject);
+var
+  iId_Telefone : Integer;
+begin
+  try
+    Application.CreateForm(TfrmProcurarTelefone, frmProcurarTelefone);
+    frmProcurarTelefone.Sql.Text := CtrlTelefones.MontaSqlTelefone;
+    frmProcurarTelefone.rgTipoPesquisa.Items.Clear;
+    frmProcurarTelefone.rgTipoPesquisa.Items.Add('Nome');
+    frmProcurarTelefone.rgTipoPesquisa.Items.Add('Id_Cliente');
+    frmProcurarTelefone.dbgrdFBProcurarTipoTelefone.Columns.Items[1].Title.Caption := 'Nome Cliente';
+    frmProcurarTelefone.dbgrdFBProcurarTipoTelefone.Columns.Items[1].Width         := 400;
+    if frmProcurarTelefone.ShowModal = mrOk then
+    begin
+      iId_Telefone              := frmProcurarTelefone.Id_Telefone;
+      CtrlTelefones.Id_Telefone := iId_Telefone;
+      edtId_Telefone.Text       := IntToStr(iId_Telefone);
+      edtId_Telefone.Repaint;
+      edtId_Telefone.Refresh;
+    end;
+  finally
+  end;
+
+end;
+
+procedure TFrmTelefones.SetCtrlClientes(const Value: TCtrlClientes);
+begin
+  FCtrlClientes := Value;
+end;
+
+procedure TFrmTelefones.SetId_Cliente(const Value: Integer);
+begin
+  FId_Cliente := Value;
+end;
+
+end.

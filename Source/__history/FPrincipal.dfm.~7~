@@ -1,0 +1,101 @@
+object FrmPrincipal: TFrmPrincipal
+  Left = 0
+  Top = 0
+  Caption = 'EcoCentauro - Teste Avalia'#231#227'o T'#233'cnica'
+  ClientHeight = 464
+  ClientWidth = 930
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poOwnerFormCenter
+  PixelsPerInch = 96
+  TextHeight = 13
+  object pnlPrincipal: TPanel
+    Left = 185
+    Top = 53
+    Width = 751
+    Height = 411
+    Align = alLeft
+    Color = clSkyBlue
+    ParentBackground = False
+    TabOrder = 0
+  end
+  object pnlMenuPrincipal: TPanel
+    Left = 0
+    Top = 53
+    Width = 185
+    Height = 411
+    Align = alLeft
+    Color = clSkyBlue
+    ParentBackground = False
+    TabOrder = 1
+    object pnlLimite1: TPanel
+      Left = 1
+      Top = 1
+      Width = 183
+      Height = 41
+      Align = alTop
+      TabOrder = 0
+      object btnEmpresas: TButton
+        Left = 1
+        Top = 1
+        Width = 181
+        Height = 39
+        Align = alClient
+        Caption = 'Empresas'
+        TabOrder = 0
+        OnClick = btnEmpresasClick
+      end
+    end
+    object pnlLimite2: TPanel
+      Left = 1
+      Top = 42
+      Width = 183
+      Height = 41
+      Align = alTop
+      TabOrder = 1
+      object btnClientes: TButton
+        Left = 1
+        Top = 1
+        Width = 181
+        Height = 39
+        Align = alClient
+        Caption = 'Clientes'
+        TabOrder = 0
+        OnClick = btnClientesClick
+      end
+    end
+    object pnlLimite3: TPanel
+      Left = 1
+      Top = 369
+      Width = 183
+      Height = 41
+      Align = alBottom
+      TabOrder = 2
+      object btnSair: TButton
+        Left = 1
+        Top = 1
+        Width = 181
+        Height = 39
+        Align = alClient
+        Caption = 'Sair'
+        TabOrder = 0
+        OnClick = btnSairClick
+      end
+    end
+  end
+  object pnlTopoPrincipal: TPanel
+    Left = 0
+    Top = 0
+    Width = 930
+    Height = 53
+    Align = alTop
+    Color = clSkyBlue
+    ParentBackground = False
+    TabOrder = 2
+  end
+end

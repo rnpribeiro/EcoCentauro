@@ -1,0 +1,23 @@
+object DMConection: TDMConection
+  OldCreateOrder = True
+  OnCreate = DMConectionCreate
+  Height = 321
+  Width = 493
+  object FDTransacaoPadrao: TFDTransaction
+    Connection = FDConexaoPadrao
+    Left = 56
+    Top = 104
+  end
+  object FDConexaoPadrao: TFDConnection
+    ConnectionName = 'FBConnection'
+    Params.Strings = (
+      'Database=C:\EcoCentauro\BancoFB2.5\ECOCENTAURO.FDB'
+      'Password=masterkey'
+      'User_Name=SYSDBA'
+      'DriverID=FB')
+    LoginPrompt = False
+    Transaction = FDTransacaoPadrao
+    Left = 136
+    Top = 48
+  end
+end

@@ -1,0 +1,64 @@
+unit eInterface.Model.PessoaJuridica;
+
+interface
+
+uses
+   eInterface.Model.Interfaces;
+   type
+
+     TModelPessoaJuridica = class(TInterfacedObject, iPessoaJuridica)
+     private
+      FID_Empresa   : Integer;
+      FNomeFantasia : string;
+      FCNPJ         : string;
+      FUF           : string;
+
+      function Id_Empresa(value: Integer): iPessoaJuridica;
+      function NomeFantasia(value: string): iPessoaJuridica;
+      function CNPJ(value: string): iPessoaJuridica;
+      function UF(value: string): iPessoaJuridica;
+
+     public
+        constructor Create;
+        destructor Destroy; override;
+        class function New: iPessoaJuridica;
+
+     end;
+implementation
+
+{ TModelPessoaJuridica }
+
+constructor TModelPessoaJuridica.Create;
+begin
+
+end;
+
+destructor TModelPessoaJuridica.Destroy;
+begin
+  inherited
+end;
+
+function TModelPessoaJuridica.CNPJ(value: string): iPessoaJuridica;
+begin
+  Result := Self;
+  FCNPJ  := value;
+end;
+
+class function TModelPessoaJuridica.New: iPessoaJuridica;
+begin
+  Result := Self.Create;
+end;
+
+function TModelPessoaJuridica.NomeFantasia(value: string): iPessoaJuridica;
+begin
+  Result        := Self;
+  FNomeFantasia := value;
+end;
+
+function TModelPessoaJuridica.UF(value: string): iPessoaJuridica;
+begin
+  Result := Self;
+  FUF    := value;
+end;
+
+end.

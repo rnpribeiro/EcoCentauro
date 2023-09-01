@@ -1,0 +1,2 @@
+inherited dtmDB: TdtmDB
+end

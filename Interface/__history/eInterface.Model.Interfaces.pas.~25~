@@ -1,0 +1,38 @@
+unit eInterface.Model.Interfaces;
+
+interface
+
+type
+
+   TEvDisplay = procedure(value: string) of object;
+
+   iPessoaJuridica = interface  ['{341113DE-1FD3-4644-84C6-B8A428649B2C}']
+      function Id_Empresa(value: Integer): iPessoa;
+      function NomeFantasia(value: string): iPessoa;
+      function CNPJ(value: string): iPessoa;
+      function UF(value: string): iPessoa;
+   end;
+
+   iPessoaFisica = interface ['{C65652B6-E071-4970-B7A6-6401719D9845}']
+      function Id_Cliente(value: Integer): iPessoa;
+      function Id_Empresa(value: Integer): iPessoa;
+      function Id_Empresa(value: Integer): iPessoa;
+      function TipoPessoa(value: string): iPessoa;
+      function Nome(value: string): iPessoa;
+      function Documento(value: string): iPessoa;
+      function RG(value: string): iPessoa;
+      function DataNascimento(value: TDate): iPessoa;
+      function DataCadastro(value: TDateTime): iPessoa;
+   end;
+
+
+
+   iPessoaFactory = interface
+     ['{B89451E1-4DCE-4F35-A451-EE5F9D161AF0}']
+     function PessoaFisica  : iPessoa;
+     function PessoaJuridica: iPessoa;
+   end;
+
+implementation
+
+end.

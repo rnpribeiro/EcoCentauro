@@ -1,0 +1,17 @@
+SELECT CL.ID_CLIENTE,              
+       CL.ID_EMPRESA,              
+       CL.NOME,                    
+       EM.NOMEFANTASIA AS EMPRESA, 
+       CL.TIPOPESSOA,              
+       CL.TELEFONES,               
+       CL.DOCUMENTO,               
+       CL.RG,                      
+       CL.UF,                      
+       CL.DATANASCIMENTO,          
+       CL.DATACADASTRO             
+FROM CLIENTES CL                   
+     INNER JOIN EMPRESAS EM ON EM.ID_EMPRESA = CL.ID_EMPRESA 
+                          
+WHERE CL.ID_CLIENTE = 2
+                            
+ORDER BY CL.NOME 

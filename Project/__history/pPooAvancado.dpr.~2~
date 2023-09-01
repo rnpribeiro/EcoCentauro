@@ -1,0 +1,14 @@
+program pPooAvancado;
+
+uses
+  Vcl.Forms,
+  FPooAvançado in 'C:\Users\HP\Documents\Embarcadero\Studio\Projects\FPooAvançado.pas' {frmPooAvançado};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TfrmPooAvançado, frmPooAvançado);
+  Application.Run;
+end.

@@ -1,0 +1,5 @@
+UpDate EMPRESAS 
+Set NOMEFANTASIA   = 'LINX SISTEMAS E CONSULTORIA LTDA XXXX', 
+    CNPJ           = '54.517.628/0032-94', 
+    UF             = 'PR'  
+Where (Id_Empresa  = 3) 
