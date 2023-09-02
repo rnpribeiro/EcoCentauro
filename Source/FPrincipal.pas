@@ -20,6 +20,7 @@ type
     btnSair: TButton;
     imgFrmPrincipal: TImage;
     imgFrmPrinciipalTopo: TImage;
+    imgFirebird: TImage;
     procedure btnEmpresasClick(Sender: TObject);
     procedure btnClientesClick(Sender: TObject);
     procedure btnSairClick(Sender: TObject);
