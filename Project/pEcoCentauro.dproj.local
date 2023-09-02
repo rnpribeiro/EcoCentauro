@@ -3,7 +3,7 @@
 	<Transactions>
     <Transaction>2023/08/29 10:27:49.000.120,C:\EcoCentauro\Project\pEcoCentauro.dproj=C:\EcoCentauro\Project\pEcoCentauro.dproj</Transaction>
     <Transaction>2023/08/29 11:11:01.000.966,=C:\EcoCentauro\Project\Unit1.pas</Transaction>
-    <Transaction>2023/08/29 11:12:00.000.218,C:\EcoCentauro\Unit\uFuncoes.pas=C:\EcoCentauro\Project\Unit1.pas</Transaction>
+    <Transaction>2023/08/29 11:12:00.000.218,C:\EcoCentauro\Project\Unit1.pas=C:\EcoCentauro\Unit\uFuncoes.pas</Transaction>
     <Transaction>2023/08/29 11:42:44.000.529,=C:\EcoCentauro\Unit\FCadOkCancelar.pas</Transaction>
     <Transaction>2023/08/29 11:44:06.000.637,=C:\EcoCentauro\Unit\FmOkCancelar.pas</Transaction>
     <Transaction>2023/08/29 11:46:46.000.213,=C:\EcoCentauro\Unit\FCadastroPai.pas</Transaction>
@@ -25,18 +25,19 @@
     <Transaction>2023/08/29 23:15:49.000.168,C:\EcoCentauro\Project\pEcoCentauro.dproj=C:\EcoCentauro\Project\pEcoCentauro.dproj</Transaction>
     <Transaction>2023/08/30 10:35:28.000.927,=C:\EcoCentauro\Control\uCtrlTelefones.pas</Transaction>
     <Transaction>2023/08/30 10:41:20.000.332,=C:\EcoCentauro\Project\Unit2.pas</Transaction>
-    <Transaction>2023/08/30 10:43:39.000.257,C:\EcoCentauro\Source\FTelefones.pas=C:\EcoCentauro\Project\Unit2.pas</Transaction>
-    <Transaction>2023/08/30 10:43:39.000.257,C:\EcoCentauro\Source\FTelefones.dfm=C:\EcoCentauro\Project\Unit2.dfm</Transaction>
+    <Transaction>2023/08/30 10:43:39.000.257,C:\EcoCentauro\Project\Unit2.pas=C:\EcoCentauro\Source\FTelefones.pas</Transaction>
+    <Transaction>2023/08/30 10:43:39.000.257,C:\EcoCentauro\Project\Unit2.dfm=C:\EcoCentauro\Source\FTelefones.dfm</Transaction>
     <Transaction>2023/08/30 11:28:27.000.808,=C:\EcoCentauro\Source\FProcurarTipoTelefone.pas</Transaction>
     <Transaction>2023/08/30 12:09:31.000.629,=C:\EcoCentauro\Project\Unit2.pas</Transaction>
-    <Transaction>2023/08/30 12:10:55.000.952,C:\EcoCentauro\Source\FPrincipal.dfm=C:\EcoCentauro\Project\Unit2.dfm</Transaction>
-    <Transaction>2023/08/30 12:10:55.000.952,C:\EcoCentauro\Source\FPrincipal.pas=C:\EcoCentauro\Project\Unit2.pas</Transaction>
+    <Transaction>2023/08/30 12:10:55.000.952,C:\EcoCentauro\Project\Unit2.dfm=C:\EcoCentauro\Source\FPrincipal.dfm</Transaction>
+    <Transaction>2023/08/30 12:10:55.000.952,C:\EcoCentauro\Project\Unit2.pas=C:\EcoCentauro\Source\FPrincipal.pas</Transaction>
     <Transaction>2023/08/31 17:20:12.000.450,=C:\EcoCentauro\Source\FProcurarTelefone.pas</Transaction>
     <Transaction>2023/08/31 21:14:38.000.731,=C:\EcoCentauro\Unit\dDMConection.pas</Transaction>
     <Transaction>2023/08/31 21:16:18.000.150,=C:\EcoCentauro\Unit\ddmCliente.pas</Transaction>
-    <Transaction>2023/08/31 21:32:46.000.950,C:\EcoCentauro\Control\uCtrlTelefones.pas=</Transaction>
     <Transaction>2023/08/31 21:32:46.000.982,C:\EcoCentauro\Source\FTelefones.pas=</Transaction>
+    <Transaction>2023/08/31 21:32:46.000.950,C:\EcoCentauro\Control\uCtrlTelefones.pas=</Transaction>
     <Transaction>2023/08/31 21:32:46.000.982,C:\EcoCentauro\Source\FProcurarTipoTelefone.pas=</Transaction>
     <Transaction>2023/08/31 21:32:46.000.982,C:\EcoCentauro\Source\FProcurarTelefone.pas=</Transaction>
+    <Transaction>2023/09/02 09:32:35.000.183,=C:\EcoCentauro\Project\Unit2.pas</Transaction>
   </Transactions>
 </BorlandProject>
