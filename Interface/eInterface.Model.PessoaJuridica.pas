@@ -8,20 +8,21 @@ uses
 
      TModelPessoaJuridica = class(TInterfacedObject, iPessoaJuridica)
      private
-      FID_Empresa   : Integer;
-      FNomeFantasia : string;
-      FCNPJ         : string;
-      FUF           : string;
+        FID_Empresa   : Integer;
+        FNomeFantasia : string;
+        FCNPJ         : string;
+        FUF           : string;
 
-      function Id_Empresa(value: Integer): iPessoaJuridica;
-      function NomeFantasia(value: string): iPessoaJuridica;
-      function CNPJ(value: string): iPessoaJuridica;
-      function UF(value: string): iPessoaJuridica;
+        function Id_Empresa(value: Integer): iPessoaJuridica;
+        function NomeFantasia(value: string): iPessoaJuridica;
+        function CNPJ(value: string): iPessoaJuridica;
+        function UF(value: string): iPessoaJuridica;
 
      public
+        class function New: iPessoaJuridica;
+
         constructor Create;
         destructor Destroy; override;
-        class function New: iPessoaJuridica;
 
      end;
 implementation

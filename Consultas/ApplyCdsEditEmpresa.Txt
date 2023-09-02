@@ -1,5 +1,5 @@
 UpDate EMPRESAS 
-Set NOMEFANTASIA   = 'LINX SISTEMAS E CONSULTORIA LTDA XXXX', 
-    CNPJ           = '54.517.628/0032-94', 
-    UF             = 'PR'  
-Where (Id_Empresa  = 3) 
+Set NOMEFANTASIA   = 'TOTVS HOSPITALITY LTDA', 
+    CNPJ           = '09.131.273/0001-40', 
+    UF             = 'RJ'  
+Where (Id_Empresa  = 2) 

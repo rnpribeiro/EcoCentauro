@@ -4,6 +4,6 @@ SELECT ID_EMPRESA,
        UF              
 FROM EMPRESAS          
                           
-WHERE Id_Empresa = 3
+WHERE Id_Empresa = 2
                             
 ORDER BY NOMEFANTASIA 

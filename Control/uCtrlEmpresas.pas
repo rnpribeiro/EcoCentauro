@@ -93,7 +93,8 @@ begin
     FMensagemInfo := 'Sucesso';
     FId_Empresa   := DataModule.qryEmpresa.FieldByName('ID_EMPRESA').AsInteger;
     FNomeFantasia := DataModule.qryEmpresa.FieldByName('NOMEFANTASIA').AsString;
-    FCNPJ         := DataModule.qryEmpresa.FieldByName('CNPJ').AsString;
+    FCNPJ         := TFuncoes.RetirarMascara(DataModule.qryEmpresa.FieldByName('CNPJ').AsString);
+    FCNPJ         := TFuncoes.MascaraCNPJ(FCNPJ);
     FUF           := DataModule.qryEmpresa.FieldByName('UF').AsString;
   end;
 end;

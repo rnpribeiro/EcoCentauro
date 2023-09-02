@@ -136,7 +136,8 @@ begin
     FEmpresa        := DataModule.qryCliente.FieldByName('EMPRESA').AsString;
     FTipoPessoa     := DataModule.qryCliente.FieldByName('TIPOPESSOA').AsString;
     FTelefones      := DataModule.qryCliente.FieldByName('TELEFONES').AsString;
-    FDocumento      := DataModule.qryCliente.FieldByName('DOCUMENTO').AsString;
+    FDocumento      := TFuncoes.RetirarMascara(DataModule.qryCliente.FieldByName('DOCUMENTO').AsString);
+    FDocumento      := TUtils.Iif<string>(FTipoPessoa = 'F' , TFuncoes.MascaraCPF(FDocumento), TFuncoes.MascaraCNPJ(FDocumento));
     FRG             := DataModule.qryCliente.FieldByName('RG').AsString;
     FUF             := DataModule.qryCliente.FieldByName('UF').AsString;
 

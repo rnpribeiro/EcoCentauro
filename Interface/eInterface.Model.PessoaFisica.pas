@@ -25,7 +25,6 @@ uses
       function RG(value: string): iPessoaFisica;
       function DataNascimento(value: string): iPessoaFisica;
       function DataCadastro(value: string): iPessoaFisica;
-
      public
         constructor Create;
         destructor Destroy; override;

@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
-  uCtrlClientes, uCtrlEmpresas, eInterface.Model.Interfaces,
+  uCtrlClientes, uCtrlEmpresas, eInterface.Model.Interfaces, eInterface.Model.PessoaFisica,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Buttons, Data.DB, Vcl.Grids, Vcl.DBGrids;
 
 type
@@ -112,6 +112,7 @@ uses
 procedure TFrmClientes.FormCreate(Sender: TObject);
 begin
   CtrlClientes                := TCtrlClientes.Create;
+  FPessoa                     := TControllerPessoa.New.PessoaFisica;
   bAction                     := False;
   Processo                    := 0;
   ReportMemoryLeaksOnShutdown := True;
@@ -147,17 +148,33 @@ var
    bTableIsEmpty : Boolean;
 begin
   bTableIsEmpty        := CtrlClientes.TableIsEmpty('CLIENTES');
-  btnIncluir.Enabled   := (not bEncontrou);
-  btnAlterar.Enabled   := (not bTableIsEmpty);
-  btnConsultar.Enabled := (not bTableIsEmpty);
-  btnExcluir.Enabled   := (not bTableIsEmpty);
-  btnProcurar.Enabled  := (not bTableIsEmpty);
+  case Processo of
+           0: begin
+                btnIncluir.Enabled   := (not bEncontrou);
+                btnAlterar.Enabled   := (not bTableIsEmpty);
+                btnConsultar.Enabled := (not bTableIsEmpty);
+                btnExcluir.Enabled   := (not bTableIsEmpty);
+                btnProcurar.Enabled  := (not bTableIsEmpty);
+              end;
+     1,2,3,4: begin
+                btnIncluir.Enabled   := (not bEncontrou)    and (Processo = 1);
+                btnAlterar.Enabled   := (not bTableIsEmpty) and (Processo = 2);
+                btnConsultar.Enabled := (not bTableIsEmpty) and (Processo = 3);
+                btnExcluir.Enabled   := (not bTableIsEmpty) and (Processo = 4);
+                btnProcurar.Enabled  := False;
+              end;
+  else
+    btnIncluir.Enabled   := False;
+    btnAlterar.Enabled   := False;
+    btnConsultar.Enabled := False;
+    btnExcluir.Enabled   := False;
+    btnProcurar.Enabled  := (not bTableIsEmpty);
+  end;
 end;
 
 procedure TFrmClientes.pnlClientesEnter(Sender: TObject);
 begin
   CtrlClientes.IniciarProperty(bAction);
-  ComponentsVisibe(True);
   edtId_Cliente.Enabled  := True;
   edtId_Cliente.Text     := TUtils.Iif<string>(CtrlClientes.Id_Cliente = 0, '********', IntToStr(CtrlClientes.Id_Cliente));
   edtId_Cliente.Enabled  := False;
@@ -180,6 +197,7 @@ var
   iId_Cliente  : Integer;
 begin
   try
+    Processo := TUtils.Iif<Integer>(Processo = 0, -1, Processo);
     Application.CreateForm(TfrmProcurarCliente, frmProcurarCliente);
     frmProcurarCliente.Sql.Text := CtrlClientes.MontaSqlProcurarCliente(-9);
     frmProcurarCliente.rgTipoPesquisa.Items.Clear;
@@ -248,50 +266,64 @@ end;
 
 procedure TFrmClientes.btnIncluirClick(Sender: TObject);
 begin
-  Processo                  := 1;
-  pnlClientesPrincipal.SendToBack;
-  pnlClientes.Enabled       := True;
-  pnlOperacaoPai.Enabled    := False;
-  pnlClientes.SetFocus;
-  btnCancelar.Enabled       := True;
-  edtDataCadastro.Text      := FormatDateTime('DD/MM/YYYY HH:MM:SS',Now);
-  CtrlClientes.DataCadastro := StringReplace(edtDataCadastro.Text,'/','.',[rfReplaceAll]);
-  edtDataCadastro.Enabled   := False;
-  rgTipoPessoa.SetFocus;
+  if Processo = 0 then
+  begin
+    Processo                  := 1;
+    pnlClientesPrincipal.SendToBack;
+    ComponentsVisibe(False);
+    pnlClientes.Enabled       := True;
+    pnlOperacaoPai.Enabled    := False;
+    pnlClientes.SetFocus;
+    btnCancelar.Enabled       := True;
+    edtDataCadastro.Text      := FormatDateTime('DD/MM/YYYY HH:MM:SS',Now);
+    CtrlClientes.DataCadastro := StringReplace(edtDataCadastro.Text,'/','.',[rfReplaceAll]);
+    edtDataCadastro.Enabled   := False;
+    HabilitarBotoesTopo(False);
+    rgTipoPessoa.SetFocus;
+  end;
 end;
 
 procedure TFrmClientes.btnAlterarClick(Sender: TObject);
 begin
-  Processo               := 2;
-  btnProcurar.Click;
-  pnlOperacaoPai.Enabled := False;
-  pnlClientes.Enabled    := True;
-  pnlClientes.SetFocus;
-  btnCancelar.Enabled    := True;
-  edtNome.SetFocus;
+  if Processo = 0 then
+  begin
+    Processo               := 2;
+    btnProcurar.Click;
+    pnlOperacaoPai.Enabled := False;
+    pnlClientes.Enabled    := True;
+    pnlClientes.SetFocus;
+    btnCancelar.Enabled    := True;
+    edtNome.SetFocus;
+  end;
 end;
 
 procedure TFrmClientes.btnConsultarClick(Sender: TObject);
 begin
-  Processo               := 3;
-  btnProcurar.Click;
-  pnlOperacaoPai.Enabled := pnlClientes.Enabled;
-  pnlClientes.Enabled    := True;
-  pnlClientes.SetFocus;
-  btnCancelar.Enabled    := True;
-  pnlClientes.Enabled    := False;
+  if Processo = 0 then
+  begin
+    Processo               := 3;
+    btnProcurar.Click;
+    pnlOperacaoPai.Enabled := pnlClientes.Enabled;
+    pnlClientes.Enabled    := True;
+    pnlClientes.SetFocus;
+    btnCancelar.Enabled    := True;
+    pnlClientes.Enabled    := False;
+  end;
 end;
 
 procedure TFrmClientes.btnExcluirClick(Sender: TObject);
 begin
-  Processo               := 4;
-  btnProcurar.Click;
-  pnlOperacaoPai.Enabled := False;
-  pnlClientes.Enabled    := True;
-  pnlClientes.SetFocus;
-  btnCancelar.Enabled    := True;
-  pnlClientes.Enabled    := False;
-  btnConfirmar.Click;
+  if Processo = 0 then
+  begin
+    Processo               := 4;
+    btnProcurar.Click;
+    pnlOperacaoPai.Enabled := False;
+    pnlClientes.Enabled    := True;
+    pnlClientes.SetFocus;
+    btnCancelar.Enabled    := True;
+    pnlClientes.Enabled    := False;
+    btnConfirmar.Click;
+  end;
 end;
 
 procedure TFrmClientes.btnConfirmarClick(Sender: TObject);
@@ -329,11 +361,20 @@ begin
 end;
 
 procedure TFrmClientes.cbbUFExit(Sender: TObject);
+var
+    FocusCancelar : Boolean;
+    FocusSair     : Boolean;
 begin
-  if cbbUF.Text = '' then
-  begin
-    ShowMessage('Necessário informar a UF');
-    cbbUF.SetFocus;
+  FocusCancelar := (not btnCancelar.Focused);
+  FocusSair     := (not btnSair.Focused);
+  try
+    if (cbbUF.Text = '') and ((FocusCancelar) and (FocusSair)) then
+    begin
+      ShowMessage('Necessário informar a UF');
+      cbbUF.SetFocus;
+    end;
+  finally
+    CtrlClientes.UF := cbbUF.Text;
   end;
 end;
 
@@ -376,25 +417,34 @@ begin
 end;
 
 procedure TFrmClientes.edtDataNascimentoExit(Sender: TObject);
+var
+   FocusCancelar : Boolean;
+   FocusSair     : Boolean;
 begin
-  if (CtrlClientes.TipoPessoa = 'F') then
+  FocusCancelar := (not btnCancelar.Focused);
+  FocusSair     := (not btnSair.Focused);
+
+  if ((FocusCancelar) and (FocusSair)) then
   begin
-    CtrlClientes.DataNascimento := edtDataNascimento.Text;
-    if (not CtrlClientes.ValidarDataNascimento) then
+    if (CtrlClientes.TipoPessoa = 'F') then
     begin
-      ShowMessage(TUtils.Iif<string>(CtrlClientes.DataNascimento <> '', MENSAGEMIDADE, MENSAGEMDATAINVALIDA));
-      edtDataNascimento.SetFocus;
+      CtrlClientes.DataNascimento := edtDataNascimento.Text;
+      if (not CtrlClientes.ValidarDataNascimento) then
+      begin
+        ShowMessage(TUtils.Iif<string>(CtrlClientes.DataNascimento <> '', MENSAGEMIDADE, MENSAGEMDATAINVALIDA));
+        edtDataNascimento.SetFocus;
+      end
+      else
+      begin
+        CtrlClientes.DataNascimento := StringReplace(edtDataNascimento.Text, '/','.',[rfReplaceAll]);
+        btnConfirmar.Enabled        := (CtrlClientes.DataNascimento <> '');
+      end;
     end
     else
     begin
-      CtrlClientes.DataNascimento := StringReplace(edtDataNascimento.Text, '/','.',[rfReplaceAll]);
-      btnConfirmar.Enabled        := (CtrlClientes.DataNascimento <> '');
+      edtDataNascimento.Text      := '';
+      CtrlClientes.DataNascimento := edtDataNascimento.Text;
     end;
-  end
-  else
-  begin
-    edtDataNascimento.Text      := '';
-    CtrlClientes.DataNascimento := edtDataNascimento.Text;
   end;
 end;
 
@@ -405,8 +455,12 @@ end;
 
 procedure TFrmClientes.edtDocumentoExit(Sender: TObject);
 var
-   bValidou : Boolean;
+   bValidou      : Boolean;
+   FocusCancelar : Boolean;
+   FocusSair     : Boolean;
 begin
+  FocusCancelar := (not btnCancelar.Focused);
+  FocusSair     := (not btnSair.Focused);
   try
     if (Trim(edtDocumento.Text) <> '') then
     begin
@@ -425,7 +479,7 @@ begin
     end
     else
     begin
-      if edtDocumento.Text = '' then
+      if (edtDocumento.Text = '') and ((FocusCancelar) and (FocusSair)) then
       begin
         ShowMessage('Necessário informar o ' + lblDocumento.Caption);
         edtDocumento.SetFocus;
@@ -436,9 +490,15 @@ begin
 end;
 
 procedure TFrmClientes.edtNomeExit(Sender: TObject);
+var
+    FocusCancelar : Boolean;
+    FocusSair     : Boolean;
 begin
+  FocusCancelar := (not btnCancelar.Focused);
+  FocusSair     := (not btnSair.Focused);
+
   CtrlClientes.Nome := edtNome.Text;
-  if (CtrlClientes.Nome = '') and ((Processo = 1) or (Processo = 2)) then
+  if (CtrlClientes.Nome = '') and ((FocusCancelar) and (FocusSair)) then
   begin
     ShowMessage('Necessário informar o nome do cliente');
     edtNome.SetFocus;
@@ -446,9 +506,14 @@ begin
 end;
 
 procedure TFrmClientes.edtRGExit(Sender: TObject);
+var
+   FocusCancelar : Boolean;
+   FocusSair     : Boolean;
 begin
+  FocusCancelar := (not btnCancelar.Focused);
+  FocusSair     := (not btnSair.Focused);
   CtrlClientes.RG := edtRG.Text;
-  if not CtrlClientes.ValidarRG then
+  if (not CtrlClientes.ValidarRG) and ((FocusCancelar) and (FocusSair)) then
   begin
     ShowMessage(MENSAGEMRG);
     edtRG.SetFocus;
@@ -468,10 +533,7 @@ end;
 
 procedure TFrmClientes.ComponentsVisibe(const Visible: Boolean);
 begin
-  FPessoa                   := TControllerPessoa.New.PessoaFisica;
-
   cbbUF.Visible             := Visible;
-
   lblId_Cliente.Visible     := Visible;
   lblNome.Visible           := Visible;
   lblDocumento.Visible      := Visible;

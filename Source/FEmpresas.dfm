@@ -39,7 +39,6 @@ object FrmEmpresas: TFrmEmpresas
     ParentBackground = False
     TabOrder = 2
     OnEnter = pnlEmpresasEnter
-    ExplicitTop = 77
     object lblNomeFantasia: TLabel
       Left = 16
       Top = 52
@@ -119,6 +118,7 @@ object FrmEmpresas: TFrmEmpresas
       CharCase = ecUpperCase
       TabOrder = 2
       OnChange = cbbUFChange
+      OnExit = cbbUFExit
     end
     object edtId_Empresa: TEdit
       Left = 93
@@ -239,8 +239,6 @@ object FrmEmpresas: TFrmEmpresas
       ParentFont = False
       TabOrder = 0
       OnClick = btnConfirmarClick
-      ExplicitLeft = 246
-      ExplicitTop = 6
     end
     object btnCancelar: TBitBtn
       Tag = 99
@@ -333,8 +331,6 @@ object FrmEmpresas: TFrmEmpresas
       ParentFont = False
       TabOrder = 1
       OnClick = btnCancelarClick
-      ExplicitLeft = 349
-      ExplicitTop = 6
     end
     object btnSair: TBitBtn
       Tag = 99
@@ -503,6 +499,8 @@ object FrmEmpresas: TFrmEmpresas
       ParentFont = False
       TabOrder = 2
       OnClick = btnSairClick
+      ExplicitLeft = 464
+      ExplicitTop = 6
     end
     object btnAjuda: TBitBtn
       Left = 561
@@ -603,8 +601,6 @@ object FrmEmpresas: TFrmEmpresas
       ParentFont = False
       TabOrder = 3
       Visible = False
-      ExplicitLeft = 567
-      ExplicitTop = 6
     end
   end
   object pnlOperacaoPai: TPanel
@@ -624,8 +620,6 @@ object FrmEmpresas: TFrmEmpresas
     ParentBackground = False
     ParentFont = False
     TabOrder = 1
-    ExplicitLeft = -1
-    ExplicitTop = -5
     object btnIncluir: TSpeedButton
       Left = 2
       Top = 2
@@ -759,7 +753,7 @@ object FrmEmpresas: TFrmEmpresas
       Layout = blGlyphTop
       ParentFont = False
       OnClick = btnIncluirClick
-      ExplicitLeft = -4
+      ExplicitLeft = 0
       ExplicitTop = -2
     end
     object btnAlterar: TSpeedButton

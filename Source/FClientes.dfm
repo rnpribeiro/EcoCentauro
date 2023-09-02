@@ -27,7 +27,6 @@ object FrmClientes: TFrmClientes
     Color = clWhite
     ParentBackground = False
     TabOrder = 3
-    ExplicitTop = 77
   end
   object pnlClientes: TPanel
     Left = 0
@@ -39,7 +38,6 @@ object FrmClientes: TFrmClientes
     ParentBackground = False
     TabOrder = 1
     OnEnter = pnlClientesEnter
-    ExplicitTop = 69
     object lblNome: TLabel
       Left = 33
       Top = 97
@@ -183,7 +181,6 @@ object FrmClientes: TFrmClientes
       ParentFont = False
       TabOrder = 2
       OnClick = rgTipoPessoaClick
-      ExplicitLeft = 0
     end
     object edtNome: TEdit
       Left = 67
@@ -826,7 +823,6 @@ object FrmClientes: TFrmClientes
       Layout = blGlyphTop
       ParentFont = False
       OnClick = btnProcurarClick
-      ExplicitLeft = 252
       ExplicitTop = -1
     end
     object btnConsultar: TSpeedButton
@@ -1072,8 +1068,6 @@ object FrmClientes: TFrmClientes
       ParentFont = False
       TabOrder = 0
       Visible = False
-      ExplicitLeft = 588
-      ExplicitTop = 6
     end
     object btnSair: TBitBtn
       Tag = 99
@@ -1242,8 +1236,6 @@ object FrmClientes: TFrmClientes
       ParentFont = False
       TabOrder = 1
       OnClick = btnSairClick
-      ExplicitLeft = 490
-      ExplicitTop = 6
     end
     object btnCancelar: TBitBtn
       Tag = 99
@@ -1437,8 +1429,6 @@ object FrmClientes: TFrmClientes
       ParentFont = False
       TabOrder = 3
       OnClick = btnConfirmarClick
-      ExplicitLeft = 272
-      ExplicitTop = 6
     end
   end
 end

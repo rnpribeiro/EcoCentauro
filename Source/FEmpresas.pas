@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
-  uCtrlEmpresas, eInterface.Model.Interfaces,
+  uCtrlEmpresas, eInterface.Model.Interfaces, eInterface.Model.PessoaJuridica,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
   Vcl.ExtCtrls, Vcl.Buttons, Data.DB, Vcl.Grids, Vcl.DBGrids;
 
@@ -47,6 +47,7 @@ type
     procedure btnSairClick(Sender: TObject);
     procedure edtNomeFantasiaExit(Sender: TObject);
     procedure cbbUFChange(Sender: TObject);
+    procedure cbbUFExit(Sender: TObject);
   private
     { Private declarations }
     CtrlEmpresas : TCtrlEmpresas;
@@ -67,13 +68,14 @@ var
 implementation
 
 uses
-   eInterface.Controller.Pessoa, uFuncoes, fProcurarEmpresa ;
+   eInterface.Controller.Pessoa, eInterface.Controller.Interfaces, uFuncoes, fProcurarEmpresa ;
 
 {$R *.dfm}
 
 procedure TFrmEmpresas.FormCreate(Sender: TObject);
 begin
   CtrlEmpresas                := TCtrlEmpresas.Create;
+  FPessoa                     := TControllerPessoa.New.PessoaJuridica;
   bAction                     := False;
   Processo                    := 0;
   ReportMemoryLeaksOnShutdown := True;
@@ -103,11 +105,28 @@ var
    bTableIsEmpty : Boolean;
 begin
   bTableIsEmpty        := CtrlEmpresas.TableIsEmpty('EMPRESAS');
-  btnIncluir.Enabled   := (not bEncontrou);
-  btnAlterar.Enabled   := (not bTableIsEmpty);
-  btnConsultar.Enabled := (not bTableIsEmpty);
-  btnExcluir.Enabled   := (not bTableIsEmpty);
-  btnProcurar.Enabled  := (not bTableIsEmpty);
+  case Processo of
+           0: begin
+                btnIncluir.Enabled   := (not bEncontrou);
+                btnAlterar.Enabled   := (not bTableIsEmpty);
+                btnConsultar.Enabled := (not bTableIsEmpty);
+                btnExcluir.Enabled   := (not bTableIsEmpty);
+                btnProcurar.Enabled  := (not bTableIsEmpty);
+              end;
+     1,2,3,4: begin
+                btnIncluir.Enabled   := (not bEncontrou)    and (Processo = 1);
+                btnAlterar.Enabled   := (not bTableIsEmpty) and (Processo = 2);
+                btnConsultar.Enabled := (not bTableIsEmpty) and (Processo = 3);
+                btnExcluir.Enabled   := (not bTableIsEmpty) and (Processo = 4);
+                btnProcurar.Enabled  := False;
+              end;
+  else
+    btnIncluir.Enabled   := False;
+    btnAlterar.Enabled   := False;
+    btnConsultar.Enabled := False;
+    btnExcluir.Enabled   := False;
+    btnProcurar.Enabled  := (not bTableIsEmpty);
+  end;
 end;
 
 procedure TFrmEmpresas.HabilitarBotoesRodaPe(Enabled: Boolean);
@@ -135,6 +154,7 @@ var
   iId_Empresa: Integer;
 begin
   try
+    Processo := TUtils.Iif<Integer>(Processo = 0, -1, Processo);
     Application.CreateForm(TfrmProcurarEmpresa, frmProcurarEmpresa);
     frmProcurarEmpresa.Sql.Text := CtrlEmpresas.MontaSqlProcurarEmpresa(-9);
     frmProcurarEmpresa.rgTipoPesquisa.Items.Clear;
@@ -170,53 +190,60 @@ end;
 
 procedure TFrmEmpresas.btnIncluirClick(Sender: TObject);
 begin
-  Processo               := 1;
-  pnlEmpresaPrincipal.SendToBack;
-  pnlEmpresas.Enabled    := True;
-  pnlOperacaoPai.Enabled := False;
-  pnlEmpresas.SetFocus;
-  btnCancelar.Enabled    := True;
-  edtNomeFantasia.SetFocus;
+  if Processo = 0 then
+  begin
+    Processo               := 1;
+    pnlEmpresaPrincipal.SendToBack;
+    pnlEmpresas.Enabled    := True;
+    pnlOperacaoPai.Enabled := False;
+    pnlEmpresas.SetFocus;
+    btnCancelar.Enabled    := True;
+    HabilitarBotoesTopo(False);
+    edtNomeFantasia.SetFocus;
+  end;
 end;
 
 procedure TFrmEmpresas.btnAlterarClick(Sender: TObject);
 begin
-  Processo               := 2;
-  btnProcurar.Click;
-  pnlOperacaoPai.Enabled := False;
-  pnlEmpresas.Enabled    := True;
-  pnlEmpresas.SetFocus;
-  btnCancelar.Enabled    := True;
-  edtNomeFantasia.SetFocus;
+  if Processo = 0 then
+  begin
+    Processo               := 2;
+    btnProcurar.Click;
+    pnlOperacaoPai.Enabled := False;
+    pnlEmpresas.Enabled    := True;
+    pnlEmpresas.SetFocus;
+    btnCancelar.Enabled    := True;
+    edtNomeFantasia.SetFocus;
+  end;
 end;
 
 procedure TFrmEmpresas.btnConsultarClick(Sender: TObject);
 begin
-  Processo               := 3;
-  btnProcurar.Click;
-  pnlOperacaoPai.Enabled := pnlEmpresas.Enabled;
-  pnlEmpresas.Enabled    := True;
-  pnlEmpresas.SetFocus;
-  btnCancelar.Enabled    := True;
-  pnlEmpresas.Enabled    := False;
+  if Processo = 0 then
+  begin
+    Processo               := 3;
+    btnProcurar.Click;
+    pnlOperacaoPai.Enabled := pnlEmpresas.Enabled;
+    pnlEmpresas.Enabled    := True;
+    pnlEmpresas.SetFocus;
+    btnCancelar.Enabled    := True;
+    pnlEmpresas.Enabled    := False;
+  end;
 end;
 
 procedure TFrmEmpresas.btnExcluirClick(Sender: TObject);
 begin
-  Processo               := 4;
-  btnProcurar.Click;
-  pnlOperacaoPai.Enabled := False;
-  pnlEmpresas.Enabled    := True;
-  pnlEmpresas.SetFocus;
-  btnCancelar.Enabled    := True;
-  pnlEmpresas.Enabled    := False;
-  btnConfirmar.Click;
-end;
-
-procedure TFrmEmpresas.cbbUFChange(Sender: TObject);
-begin
-  CtrlEmpresas.UF      := cbbUF.Text;
-  btnConfirmar.Enabled := (cbbUF.Text <> '');
+  if Processo = 0 then
+  begin
+    Processo               := 4;
+    btnProcurar.Click;
+    pnlOperacaoPai.Enabled := False;
+    pnlEmpresas.Enabled    := True;
+    pnlEmpresas.SetFocus;
+    btnCancelar.Enabled    := True;
+    pnlEmpresas.Enabled    := False;
+    btnConfirmar.Click;
+  end;
 end;
 
 procedure TFrmEmpresas.btnConfirmarClick(Sender: TObject);
@@ -246,24 +273,96 @@ begin
   Close;
 end;
 
-procedure TFrmEmpresas.edtCNPJExit(Sender: TObject);
+procedure TFrmEmpresas.edtNomeFantasiaExit(Sender: TObject);
+var
+    FocusCancelar : Boolean;
+    FocusSair     : Boolean;
 begin
-  if not TFuncoes.ValidarCNPJ(edtCNPJ.Text) then
+  FocusCancelar := (not btnCancelar.Focused);
+  FocusSair     := (not btnSair.Focused);
+
+  CtrlEmpresas.NomeFantasia := edtNomeFantasia.Text;
+  if (CtrlEmpresas.NomeFantasia = '') and ((FocusCancelar) and (FocusSair)) then
   begin
-    ShowMessage('CNPJ Inválido!');
-    edtCNPJ.SetFocus;
+    ShowMessage('Necessário informar o nome fantasia da Empresa');
+    edtNomeFantasia.SetFocus;
+  end;
+
+end;
+
+procedure TFrmEmpresas.edtCNPJExit(Sender: TObject);
+var
+    FocusCancelar : Boolean;
+    FocusSair     : Boolean;
+begin
+  FocusCancelar := (not btnCancelar.Focused);
+  FocusSair     := (not btnSair.Focused);
+  if (Trim(edtCNPJ.Text) <> '') then
+  begin
+    if not TFuncoes.ValidarCNPJ(edtCNPJ.Text) then
+    begin
+      ShowMessage('CNPJ Inválido!');
+      edtCNPJ.SetFocus;
+    end
+    else
+    begin
+      edtCNPJ.Text      := TFuncoes.RetirarMascara(edtCNPJ.Text);
+      edtCNPJ.Text      := TFuncoes.MascaraCNPJ(edtCNPJ.Text);
+      CtrlEmpresas.CNPJ := edtCNPJ.Text;
+    end;
   end
   else
   begin
-    edtCNPJ.Text      := TFuncoes.RetirarMascara(edtCNPJ.Text);
-    edtCNPJ.Text      := TFuncoes.MascaraCNPJ(edtCNPJ.Text);
-    CtrlEmpresas.CNPJ := edtCNPJ.Text;
+    if (edtCNPJ.Text = '') and ((FocusCancelar) and (FocusSair)) then
+    begin
+      ShowMessage('Necessário informar o CNPJ');
+      edtCNPJ.SetFocus;
+    end;
   end;
 end;
 
-procedure TFrmEmpresas.edtNomeFantasiaExit(Sender: TObject);
+procedure TFrmEmpresas.cbbUFChange(Sender: TObject);
+var
+    FocusCancelar : Boolean;
+    FocusSair     : Boolean;
 begin
- CtrlEmpresas.NomeFantasia := edtNomeFantasia.Text;
+  FocusCancelar := (not btnCancelar.Focused);
+  FocusSair     := (not btnSair.Focused);
+  try
+    if (cbbUF.Text = '') and ((FocusCancelar) and (FocusSair)) then
+    begin
+      ShowMessage('Necessário informar a UF');
+      cbbUF.SetFocus;
+    end
+    else
+    begin
+      CtrlEmpresas.UF      := cbbUF.Text;
+    end;
+  finally
+    btnConfirmar.Enabled := (cbbUF.Text <> '');
+  end;
+end;
+
+procedure TFrmEmpresas.cbbUFExit(Sender: TObject);
+var
+    FocusCancelar : Boolean;
+    FocusSair     : Boolean;
+begin
+  FocusCancelar := (not btnCancelar.Focused);
+  FocusSair     := (not btnSair.Focused);
+  try
+    if (cbbUF.Text = '') and ((FocusCancelar) and (FocusSair)) then
+    begin
+      ShowMessage('Necessário informar a UF');
+      cbbUF.SetFocus;
+    end
+    else
+    begin
+      CtrlEmpresas.UF      := cbbUF.Text;
+    end;
+  finally
+    btnConfirmar.Enabled := (cbbUF.Text <> '');
+  end;
 end;
 
 end.
