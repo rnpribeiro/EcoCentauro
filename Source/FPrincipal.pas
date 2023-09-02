@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
-  dxGDIPlusClasses;
+  dxGDIPlusClasses, Vcl.ComCtrls;
 
 type
   TFrmPrincipal = class(TForm)
@@ -21,6 +21,7 @@ type
     imgFrmPrincipal: TImage;
     imgFrmPrinciipalTopo: TImage;
     imgFirebird: TImage;
+    statPrincipal: TStatusBar;
     procedure btnEmpresasClick(Sender: TObject);
     procedure btnClientesClick(Sender: TObject);
     procedure btnSairClick(Sender: TObject);
