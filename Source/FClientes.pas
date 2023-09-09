@@ -329,7 +329,7 @@ end;
 procedure TFrmClientes.btnConfirmarClick(Sender: TObject);
 begin
   try
-    if CtrlClientes.ValidarDados then
+    if (CtrlClientes.ValidarDados) then
       CtrlClientes.Processar(Processo);
   finally
     btnCancelar.Click;
@@ -375,6 +375,7 @@ begin
     end;
   finally
     CtrlClientes.UF := cbbUF.Text;
+    btnConfirmar.Enabled := ((not btnConfirmar.Enabled) and (CtrlClientes.TipoPessoa = 'J'));
   end;
 end;
 
@@ -464,7 +465,12 @@ begin
   try
     if (Trim(edtDocumento.Text) <> '') then
     begin
-      bValidou := TUtils.Iif<Boolean>(CtrlClientes.TipoPessoa = 'F' , TFuncoes.ValidarCPF(edtDocumento.Text), TFuncoes.ValidarCNPJ(edtDocumento.Text));
+
+      if (CtrlClientes.TipoPessoa = 'F') then
+        bValidou :=  TFuncoes.ValidarCPF(edtDocumento.Text)
+      else
+        bValidou := TFuncoes.ValidarCNPJ(edtDocumento.Text);
+
       if not bValidou then
       begin
         ShowMessage(lblDocumento.Caption + ' Inválido!');
@@ -537,7 +543,7 @@ begin
   lblId_Cliente.Visible     := Visible;
   lblNome.Visible           := Visible;
   lblDocumento.Visible      := Visible;
-  lblRG.Visible             := Visible;
+  lblRG.Visible             := (rgTipoPessoa.ItemIndex = 0);
   lblUF.Visible             := Visible;
   lblEmpresa.Visible        := Visible;
   lblDataNascimento.Visible := Visible;
@@ -547,7 +553,7 @@ begin
   edtId_Cliente.Visible     := Visible;
   edtNome.Visible           := Visible;
   edtDocumento.Visible      := Visible;
-  edtRG.Visible             := Visible;
+  edtRG.Visible             := (rgTipoPessoa.ItemIndex = 0);
   edtId_Empresa.Visible     := Visible;
   btnEmpresa.Visible        := Visible;
   edtEmpresa.Visible        := Visible;

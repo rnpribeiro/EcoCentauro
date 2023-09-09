@@ -167,7 +167,7 @@ begin
     sql.Add('       CL.DATANASCIMENTO,          ');
     sql.Add('       CL.DATACADASTRO             ');
     sql.Add('FROM CLIENTES CL                   ');
-    sql.Add('     INNER JOIN EMPRESAS EM ON EM.ID_EMPRESA = CL.ID_EMPRESA ');
+    sql.Add('     LEFT OUTER JOIN EMPRESAS EM ON EM.ID_EMPRESA = CL.ID_EMPRESA ');
 
     if (AId_Cliente <> -9)then
     begin
@@ -245,8 +245,12 @@ end;
 
 function TCtrlClientes.ValidarDados: Boolean;
 begin
-  Result := ValidarDataNascimento;
-  Result := TUtils.Iif<Boolean>(Result, ValidarRG, Result);
+  Result := True;
+  if (TipoPessoa = 'F') then
+  begin
+    Result := ValidarDataNascimento;
+    Result := TUtils.Iif<Boolean>(Result, ValidarRG, Result);
+  end;
 end;
 
 function TCtrlClientes.ValidarDataNascimento: Boolean;
@@ -451,23 +455,35 @@ end;
 
 function TCtrlClientes.ApplyCdsEditCliente(AId_Cliente: Integer): Boolean;
 var
-    DataModule : TdmCliente;
+   DataModule      : TdmCliente;
+   sId_Empresa     : string;
+   sDataNascimento : string;
 begin
   DataModule := TdmCliente.Create(nil);
   DataModule.DataModule.FDConexaoPadrao.StartTransaction;
   try
     try
+      if (Id_Empresa = 0) then
+         sId_Empresa := 'null'
+      else
+         sId_Empresa := IntToStr(Id_Empresa);
+
+      if (DataNascimento = '') then
+        sDataNascimento := 'null'
+      else
+        sDataNascimento := QuotedStr(DataNascimento);
+
       DataModule.qryConexaoPadrao.Close;
       DataModule.qryConexaoPadrao.SQL.Clear;
       DataModule.qryConexaoPadrao.SQL.Add('UpDate CLIENTES ');
-      DataModule.qryConexaoPadrao.SQL.Add('Set ID_EMPRESA     = ' + IntToStr(Id_Empresa)      + ', ');
+      DataModule.qryConexaoPadrao.SQL.Add('Set ID_EMPRESA     = ' + sId_Empresa               + ', ');
       DataModule.qryConexaoPadrao.SQL.Add('    NOME           = ' + QuotedStr(Nome)           + ', ');
       DataModule.qryConexaoPadrao.SQL.Add('    TIPOPESSOA     = ' + QuotedStr(TipoPessoa)     + ', ');
       DataModule.qryConexaoPadrao.SQL.Add('    TELEFONES      = ' + QuotedStr(Telefones)      + ', ');
       DataModule.qryConexaoPadrao.SQL.Add('    DOCUMENTO      = ' + QuotedStr(Documento)      + ', ');
       DataModule.qryConexaoPadrao.SQL.Add('    RG             = ' + QuotedStr(RG)             + ', ');
       DataModule.qryConexaoPadrao.SQL.Add('    UF             = ' + QuotedStr(UF)             + ', ');
-      DataModule.qryConexaoPadrao.SQL.Add('    DATANASCIMENTO = ' + QuotedStr(DataNascimento) + ', ');
+      DataModule.qryConexaoPadrao.SQL.Add('    DATANASCIMENTO = ' + sDataNascimento           + ', ');
       DataModule.qryConexaoPadrao.SQL.Add('    DATACADASTRO   = ' + QuotedStr(DataCadastro)   + '  ');
       DataModule.qryConexaoPadrao.SQL.Add('Where (Id_Cliente  = ' + IntToStr(AId_Cliente)     + ') ');
 
@@ -493,7 +509,9 @@ end;
 
 function TCtrlClientes.ApplyCdsInsertCliente(var AId_Cliente: Integer): Boolean;
 var
-   iVezes : Integer;
+   iVezes          : Integer;
+   sId_Empresa     : string;
+   sDataNascimento : string;
 begin
   DataModule.DataModule.FDConexaoPadrao.StartTransaction;
   try
@@ -515,6 +533,16 @@ begin
     end;
 
     try
+      if (Id_Empresa = 0) then
+         sId_Empresa := 'null'
+      else
+         sId_Empresa := IntToStr(Id_Empresa);
+
+      if (DataNascimento = '') then
+        sDataNascimento := 'null'
+      else
+        sDataNascimento := QuotedStr(DataNascimento);
+
       DataModule.qryConexaoPadrao.Close;
       DataModule.qryConexaoPadrao.SQL.Clear;
       DataModule.qryConexaoPadrao.SQL.Add('Insert Into CLIENTES ');
@@ -530,14 +558,14 @@ begin
       DataModule.qryConexaoPadrao.SQL.Add('        DATACADASTRO) ');
       DataModule.qryConexaoPadrao.SQL.Add('       ');
       DataModule.qryConexaoPadrao.SQL.Add('Values (' + IntToStr(AId_Cliente)     + ',');
-      DataModule.qryConexaoPadrao.SQL.Add(             IntToStr(Id_Empresa)      + ', ');
+      DataModule.qryConexaoPadrao.SQL.Add(             sId_Empresa               + ', ');
       DataModule.qryConexaoPadrao.SQL.Add(             QuotedStr(Nome)           + ', ');
       DataModule.qryConexaoPadrao.SQL.Add(             QuotedStr(TipoPessoa)     + ', ');
       DataModule.qryConexaoPadrao.SQL.Add(             QuotedStr(Telefones)      + ', ');
       DataModule.qryConexaoPadrao.SQL.Add(             QuotedStr(Documento)      + ', ');
       DataModule.qryConexaoPadrao.SQL.Add(             QuotedStr(RG)             + ', ');
       DataModule.qryConexaoPadrao.SQL.Add(             QuotedStr(UF)             + ', ');
-      DataModule.qryConexaoPadrao.SQL.Add(             QuotedStr(DataNascimento) + ', ');
+      DataModule.qryConexaoPadrao.SQL.Add(             sDataNascimento           + ', ');
       DataModule.qryConexaoPadrao.SQL.Add(             QuotedStr(DataCadastro)   + ') ');
 
       if DebugHook <> 0 then

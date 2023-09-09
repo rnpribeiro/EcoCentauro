@@ -181,6 +181,7 @@ object FrmClientes: TFrmClientes
       ParentFont = False
       TabOrder = 2
       OnClick = rgTipoPessoaClick
+      ExplicitLeft = 2
     end
     object edtNome: TEdit
       Left = 67
@@ -258,7 +259,7 @@ object FrmClientes: TFrmClientes
     end
     object cbbUF: TComboBox
       Left = 221
-      Top = 122
+      Top = 120
       Width = 51
       Height = 21
       CharCase = ecUpperCase
@@ -1429,6 +1430,8 @@ object FrmClientes: TFrmClientes
       ParentFont = False
       TabOrder = 3
       OnClick = btnConfirmarClick
+      ExplicitLeft = 280
+      ExplicitTop = 6
     end
   end
 end

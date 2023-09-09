@@ -1,6 +1,0 @@
-SELECT ID_CLIENTE AS IDRETORNO, 
-       NOME,                    
-       DOCUMENTO,               
-       DATANASCIMENTO           
-FROM CLIENTES                   
-ORDER BY NOME  

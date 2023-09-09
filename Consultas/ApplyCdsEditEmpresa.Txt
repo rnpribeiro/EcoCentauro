@@ -1,5 +1,0 @@
-UpDate EMPRESAS 
-Set NOMEFANTASIA   = 'TOTVS HOSPITALITY LTDA', 
-    CNPJ           = '09.131.273/0001-40', 
-    UF             = 'RJ'  
-Where (Id_Empresa  = 2) 

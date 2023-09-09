@@ -1,6 +1,9 @@
 
 # Ignore todos os arquivos de texto
 *.dcu
+*.txt
+*.sql
 *.~*
 
 
+/Consultas/*.Txt
